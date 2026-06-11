@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>05. 用 Superpowers 深化设计，但不替代 OpenSpec</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <button class="menu-button" type="button" aria-controls="sidebar" aria-expanded="false">目录</button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">Vibe Coding Adv Reader</div>
+      <nav><a class="nav-link nav-home" href="../index.html">课程首页</a>
+<div class="nav-section">阅读入口</div>
+<a class="nav-link " href="../article.html">长文导读</a>
+<a class="nav-link " href="README.html">课程 README</a>
+<div class="nav-section">分节指南</div>
+<a class="nav-link " href="00_overview.html">00 从做小项目到优化真实项目</a>
+<a class="nav-link " href="01_repo_selection_and_workflow.html">01 选择真实项目，并看懂双工具工作流</a>
+<a class="nav-link " href="02_git_basics.html">02 先学会本地 Git，再开始真实项目</a>
+<a class="nav-link " href="03_clone_and_baseline.html">03 远程 GitHub、克隆项目并记录基线</a>
+<a class="nav-link " href="04_openspec_proposal.html">04 创建 Change 1 OpenSpec</a>
+<a class="nav-link active" href="05_superpowers_brainstorm.html">05 用 Superpowers 深化设计，但不替代 OpenSpec</a>
+<a class="nav-link " href="06_superpowers_write_plan.html">06 用 Superpowers 写可执行 TDD 计划</a>
+<a class="nav-link " href="07_tdd_subagent_execution.html">07 用 TDD + subagent 执行 Change 1</a>
+<a class="nav-link " href="08_slack_notification_bugfix.html">08 执行 Change 2</a>
+<a class="nav-link " href="09_dashboard_change.html">09 准备并执行 Change 3</a>
+<a class="nav-link " href="10_qr_change.html">10 准备并执行 Change 4</a>
+<a class="nav-link " href="11_reflection_and_transfer.html">11 最终收口并复盘迁移这套工作流</a></nav>
+    </aside>
+    <main class="content">
+      <header class="page-header">
+        <h1>05. 用 Superpowers 深化设计，但不替代 OpenSpec</h1>
+        <div class="source-label">Source: guide/05_superpowers_brainstorm.md</div>
+        <nav class="page-links"><a href="04_openspec_proposal.html">上一页：04 创建 Change 1 OpenSpec</a>
+<a href="06_superpowers_write_plan.html">下一页：06 用 Superpowers 写可执行 TDD 计划</a></nav>
+      </header>
+      <article class="markdown-body">
+<h2 id="预计用时">预计用时</h2>
+<p>40-60 分钟。</p>
+<h2 id="本节位置">本节位置</h2>
+<p>上一节已经创建 Change 1 <code>quality-baseline</code> OpenSpec change，并且 proposal / spec / design /tasks 已经生成。</p>
+<p>本节先确认 <code>Superpowers</code> skills 可用，再进入 <code>Superpowers brainstorming</code> 阶段：基于 OpenSpec artifacts 深化技术设计、测试策略和风险边界。OpenSpec 仍然是需求事实源，本节不写计划，也不写实现代码。</p>
+<h2 id="工具使用规则">工具使用规则</h2>
+<ul>
+<li>终端用于查看 <code>OpenSpec</code> artifacts 和生成后的设计文档。</li>
+<li><code>Claude Code CLI</code> 用于检查 <code>Superpowers</code> skills 是否可用，并调用 <code>Superpowers brainstorming</code>。</li>
+<li>本节允许创建 <code>docs/superpowers/specs/</code> 下的设计文档。</li>
+<li>如果发现验收场景缺失，只能回写 OpenSpec spec，不能直接改业务代码。</li>
+<li>如果上一节的 <code>tasks.md</code> 还没补齐，先回到 <code>04</code> 处理，不要直接开始 brainstorming。</li>
+</ul>
+<h2 id="学习目标">学习目标</h2>
+<ul>
+<li>学会把 OpenSpec artifacts 交给 Superpowers 作为输入，而不是让它凭空开始。</li>
+<li>学会先确认 Superpowers readiness，再开始 brainstorming。</li>
+<li>区分“需求规格”和“技术设计”。</li>
+<li>补充测试策略、边界条件和最小可测接口。</li>
+</ul>
+<h2 id="本节产出物">本节产出物</h2>
+<ul>
+<li><code>learn_vibe_adv/overclocked-helpdesk-lab/docs/superpowers/specs/</code> 下的新 Change 1 design doc（文件名以 Claude 实际生成结果为准）</li>
+<li>如有必要，对 Change 1 OpenSpec spec 的小范围补充。</li>
+</ul>
+<h2 id="操作步骤">操作步骤</h2>
+<h3 id="第-1-步-检查-superpowers-是否可用">第 1 步：检查 Superpowers 是否可用</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请检查当前 Claude Code 是否可以使用 Superpowers skills。
+
+要求：
+1. 不修改文件；
+2. 只告诉我是否能看到 brainstorming、writing-plans、test-driven-development、subagent-driven-development、finishing-a-development-branch；
+3. 如果不可用，请给出安装或启用步骤；
+4. 不要开始 brainstorming。
+</code></pre>
+<p>如果 <code>Superpowers</code> 还没有安装，不要假设每个版本都有同一个命令。优先使用你当前 Claude Code 版本里可见的插件市场、插件菜单或官方等价安装方式；安装完成后重新打开 Claude Code，再回到本节继续。</p>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请安装Superpowers Skill，并激活
+</code></pre>
+<h3 id="第-2-步-定位-change-1-文件">第 2 步：定位 Change 1 文件</h3>
+<p>在终端执行：</p>
+<pre><code class="language-bash">cd learn_vibe_adv/overclocked-helpdesk-lab
+find openspec/changes -maxdepth 4 -type f | sort
+</code></pre>
+<p>记录 Change 1 的真实目录名和路径。</p>
+<h3 id="第-3-步-在-claude-code-cli-中触发-superpowers-brainstorming">第 3 步：在 Claude Code CLI 中触发 Superpowers brainstorming</h3>
+<p>在 <code>Claude Code CLI</code> 中输入，把 <code>&lt;change-dir&gt;</code> 替换为真实目录：</p>
+<pre><code class="language-text">请使用 Superpowers brainstorming。
+
+先完整读取以下 OpenSpec change 文件，不要摘要后跳过：
+- openspec/changes/&lt;change-dir&gt;/proposal.md
+- openspec/changes/&lt;change-dir&gt;/design.md
+- openspec/changes/&lt;change-dir&gt;/tasks.md
+- openspec/changes/&lt;change-dir&gt;/specs/ 下所有 spec.md
+
+约束：
+1. OpenSpec 是需求事实源，不要重写需求；
+2. 你的任务是做技术设计深化：测试策略、边界条件、最小可测接口、风险；
+3. 如果发现缺少验收场景，只能回写 OpenSpec delta spec；
+4. 不要实现代码；
+5. 不要修改业务文件。
+
+完成后产出：
+- Design Doc -&gt; 保存到 docs/superpowers/specs/ 下，并在完成后告诉我实际文件路径
+- 如有缺失验收场景，回写到 OpenSpec spec。
+</code></pre>
+<h3 id="第-4-步-重点追问测试设计">第 4 步：重点追问测试设计</h3>
+<p>如果 Claude 的设计仍然过泛，在 <code>Claude Code CLI</code> 中继续输入：</p>
+<pre><code class="language-text">请把测试策略收缩到 Change 1 质量基线。
+
+要求：
+1. 明确 mentor assignment 至少测试哪两个行为；
+2. 明确 query creation 至少测试哪一个成功路径；
+3. 标注哪些测试是在记录当前行为，哪些测试会成为后续优化的保护网；
+4. 不要加入 UI e2e、WebSocket、认证或部署测试。
+</code></pre>
+<h3 id="第-5-步-发现并记录真实设计文档路径">第 5 步：发现并记录真实设计文档路径</h3>
+<p>在终端执行：</p>
+<pre><code class="language-bash">find docs/superpowers/specs -type f | sort
+</code></pre>
+<p>从输出中记录本轮 design doc 的真实路径。后面的 <code>06</code> 不要再猜文件名，要直接复用你刚记录的真实路径。</p>
+<p>确认这份文档是技术设计和测试策略，而不是第二份需求规格。</p>
+<h2 id="验收标准">验收标准</h2>
+<p>在终端运行或检查：</p>
+<pre><code class="language-bash">cd learn_vibe_adv/overclocked-helpdesk-lab
+find docs/superpowers/specs -type f | sort
+git status --short
+</code></pre>
+<p>通过标准：</p>
+<ul>
+<li><code>Superpowers</code> 设计文档已创建。</li>
+<li>你已经确认 Superpowers skills 可用，或把不可用的阻塞和安装/启用步骤记录清楚。</li>
+<li>你已经记录了 design doc 的真实路径，后续会直接复用这个路径。</li>
+<li>设计文档解释了测试边界、fixtures、风险和最小验证命令。</li>
+<li>OpenSpec 仍然是 canonical spec。</li>
+<li>没有开始写实现代码，也没有开始写执行计划。</li>
+</ul>
+<p>需要停下处理：</p>
+<ul>
+<li>如果 <code>Superpowers</code> 重新定义了需求，要求它回到“基于 OpenSpec 深化技术设计”。</li>
+<li>如果 Superpowers skills 不可用，不要跳过第 1 步直接让 Claude 手写设计文档。</li>
+<li>如果你已经在讨论 task-by-task 实施顺序，先停下来，因为那是 <code>06</code> 的工作。</li>
+</ul>
+<h2 id="常见卡点">常见卡点</h2>
+<ul>
+<li>把 design doc 写成 PRD。</li>
+<li>没确认 Superpowers 可用，就直接让 Claude “设计一下”。</li>
+<li>测试策略太泛，只写“添加适当测试”。</li>
+<li>发现缺失验收场景却只写在 design doc，而没有回写 OpenSpec spec。</li>
+<li>以为 Claude 一定会生成和课程示例完全一样的文件名。</li>
+<li>在 brainstorming 阶段就开始实现代码。</li>
+</ul>
+
+      </article>
+      <footer class="footer">Created by Walter and Codex at 2026-06-11 23:37.</footer>
+    </main>
+  </div>
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

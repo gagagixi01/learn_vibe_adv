@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>00. 从做小项目到优化真实项目</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <button class="menu-button" type="button" aria-controls="sidebar" aria-expanded="false">目录</button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">Vibe Coding Adv Reader</div>
+      <nav><a class="nav-link nav-home" href="../index.html">课程首页</a>
+<div class="nav-section">阅读入口</div>
+<a class="nav-link " href="../article.html">长文导读</a>
+<a class="nav-link " href="README.html">课程 README</a>
+<div class="nav-section">分节指南</div>
+<a class="nav-link active" href="00_overview.html">00 从做小项目到优化真实项目</a>
+<a class="nav-link " href="01_repo_selection_and_workflow.html">01 选择真实项目，并看懂双工具工作流</a>
+<a class="nav-link " href="02_git_basics.html">02 先学会本地 Git，再开始真实项目</a>
+<a class="nav-link " href="03_clone_and_baseline.html">03 远程 GitHub、克隆项目并记录基线</a>
+<a class="nav-link " href="04_openspec_proposal.html">04 创建 Change 1 OpenSpec</a>
+<a class="nav-link " href="05_superpowers_brainstorm.html">05 用 Superpowers 深化设计，但不替代 OpenSpec</a>
+<a class="nav-link " href="06_superpowers_write_plan.html">06 用 Superpowers 写可执行 TDD 计划</a>
+<a class="nav-link " href="07_tdd_subagent_execution.html">07 用 TDD + subagent 执行 Change 1</a>
+<a class="nav-link " href="08_slack_notification_bugfix.html">08 执行 Change 2</a>
+<a class="nav-link " href="09_dashboard_change.html">09 准备并执行 Change 3</a>
+<a class="nav-link " href="10_qr_change.html">10 准备并执行 Change 4</a>
+<a class="nav-link " href="11_reflection_and_transfer.html">11 最终收口并复盘迁移这套工作流</a></nav>
+    </aside>
+    <main class="content">
+      <header class="page-header">
+        <h1>00. 从做小项目到优化真实项目</h1>
+        <div class="source-label">Source: guide/00_overview.md</div>
+        <nav class="page-links"><a href="README.html">上一页：课程 README</a>
+<a href="01_repo_selection_and_workflow.html">下一页：01 选择真实项目，并看懂双工具工作流</a></nav>
+      </header>
+      <article class="markdown-body">
+<h2 id="预计用时">预计用时</h2>
+<p>15-20 分钟。</p>
+<h2 id="本节位置">本节位置</h2>
+<p>这是进阶路线的开场课。本节不克隆仓库、不安装依赖、不启动 Claude Code，只建立学习地图：你将从入门课的“从零做任务系统”，进入“读懂并优化一个已有 GitHub 项目”。</p>
+<h2 id="工具使用规则">工具使用规则</h2>
+<p>本节通常不需要运行项目命令；如果还没有 <code>learn_vibe_adv/</code>，只用终端创建课程目录和 <code>notes/</code>。本节不启动 <code>Claude Code CLI</code>。全课统一工具边界见 <code>AGENT.md</code>。</p>
+<h2 id="学习目标">学习目标</h2>
+<ul>
+<li>理解为什么进阶课必须使用已有项目，而不是继续从零生成。</li>
+<li>能用自己的话解释 <code>OpenSpec</code> 和 <code>Superpowers</code> 分别是什么。</li>
+<li>知道 <code>OpenSpec</code> 管什么，<code>Superpowers</code> 管什么，以及为什么这门课同时使用它们。</li>
+<li>知道本课程要优化的项目、四个独立 change 和最终产出。</li>
+<li>建立“先读懂、再规格、再测试、再优化”的心智。</li>
+</ul>
+<h2 id="本节产出物">本节产出物</h2>
+<p>一份统一的开场笔记，建议保存为：</p>
+<p><code>learn_vibe_adv/notes/tool-comparison.md</code></p>
+<p>如果你已经在准备好的课程仓库里阅读本节，只需要确认 <code>learn_vibe_adv/notes/</code> 存在；如果你是从一个空的学习工作区开始，先按第 0 步创建它。</p>
+<pre><code class="language-markdown"># Tool Comparison
+
+## 我的进阶工作流概念卡
+
+真实代码库：
+OpenSpec：
+Superpowers：
+TDD：
+Review：
+Archive：
+
+## OpenSpec 与 Superpowers 对照笔记
+
+OpenSpec 负责：
+Superpowers 负责：
+
+为什么这门课同时使用它们：
+</code></pre>
+<h2 id="操作步骤">操作步骤</h2>
+<h3 id="第-0-步-先准备课程目录">第 0 步：先准备课程目录</h3>
+<p>如果你的学习工作区里还没有 <code>learn_vibe_adv/</code>，先在终端执行：</p>
+<pre><code class="language-bash">mkdir -p learn_vibe_adv/notes
+</code></pre>
+<p>这一步只创建课程目录和笔记目录，方便你保存 <code>notes/tool-comparison.md</code>。不要在本节 clone 真实项目，不要安装依赖，不要初始化 OpenSpec，也不要创建后面章节才会出现的 <code>overclocked-helpdesk-lab/</code>、<code>openspec/</code> 或 <code>docs/superpowers/</code>。</p>
+<p>如果 <code>learn_vibe_adv/</code> 已经存在，只确认 <code>notes/</code> 能保存笔记即可。</p>
+<h3 id="第-1-步-先理解进阶课为什么换成真实项目">第 1 步：先理解进阶课为什么换成真实项目</h3>
+<p>入门课的任务管理系统适合建立全栈主线：页面、路由、数据库和测试。但真实开发很少从空目录开始。更多时候，你面对的是一个已有项目：目录已经存在，命名已经存在，设计取舍已经存在，问题也已经存在。</p>
+<p>进阶课选用 <a href="https://github.com/gagagixi01/OverClocked-Helpdesk">OverClocked Helpdesk</a>。它是一个 Helpdesk 系统，学生或团队提交问题，导师处理问题，管理员管理导师和查看问题。它比 Todo 更复杂，但仍然是 Python 新人能理解的技术栈：<code>FastAPI + SQLite + SQLAlchemy + Jinja2</code>。</p>
+<p>这门课的 startup 状态不是“一个已经塞满教学 artifact 的练习包”，而是一个刚刚从 GitHub clone 下来的真实仓库。后面提到的 <code>openspec/</code>、<code>docs/current-capabilities.md</code>、<code>docs/superpowers/</code>、新增测试和 verification 文档，都是你在课程里一步步创建出来的，不是起点自带。</p>
+<h3 id="第-2-步-记住四个独立-change">第 2 步：记住四个独立 change</h3>
+<p>本课程默认做四个独立 change，不做一口气“重构全项目”。四个 change 按“先基线，再小修复，再可见优化，再不可见硬化”的顺序推进：</p>
+<p>| 位置 | Change | 目标 | 结果分类 |
+|---|---|---|
+| Change 1 | <code>quality-baseline</code> | 给导师分配和问题创建补测试，建立质量基线 | <code>no visible change</code> |
+| Change 2 | <code>stabilize-slack-notification-config</code> | 修复 Slack webhook 未配置时的崩溃风险 | <code>no visible change</code> |
+| Change 3 | <code>optimize-dashboard-readability</code> | 改善管理端和导师端仪表盘信息层级，增加轻量统计和状态可见性 | <code>visible change</code> |
+| Change 4 | <code>configure-qr-base-url</code> | 让 QR 码目标地址使用可配置 base URL，默认页面体验不变 | <code>no visible change</code> |</p>
+<p>从 <code>07</code> 开始，每一轮都要记录网页 before / after evidence。不是每个 change 都会带来可见页面变化，所以你要学会区分三类结果：</p>
+<table>
+<thead>
+<tr>
+  <th>分类</th>
+  <th>含义</th>
+  <th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>visible change</code></td>
+  <td>页面上能直接看到变化</td>
+  <td>dashboard 增加统计和状态 badge</td>
+</tr>
+<tr>
+  <td><code>no visible change</code></td>
+  <td>页面不变，但测试、后台稳定性或配置能力变了</td>
+  <td>质量基线、Slack 缺失配置 bugfix、QR base URL 配置</td>
+</tr>
+<tr>
+  <td><code>artifact-only preparation</code></td>
+  <td>只准备 OpenSpec / Superpowers artifacts，还没有实现</td>
+  <td>例如进入 Change 4 实现前的 planning 阶段</td>
+</tr>
+</tbody>
+</table>
+<p><code>artifact-only preparation</code> 是课程阶段分类，不是最终 change 类型。一个 change 准备时可以先标成 <code>artifact-only preparation</code>，真正执行后要重新归类为 <code>visible change</code> 或 <code>no visible change</code>。</p>
+<p>按课程阶段理解后面的章节，会更不容易混乱：</p>
+<ul>
+<li><code>04</code> 负责 Change 1 质量基线的 OpenSpec 初始化、能力地图和 proposal。</li>
+<li><code>05</code> 到 <code>06</code> 负责 Change 1 质量基线的 design / plan。</li>
+<li><code>07</code> 负责用 TDD + subagent 执行 Change 1，并记录 no visible change evidence。</li>
+<li><code>08</code> 负责第二个 change：Slack 配置 bugfix。</li>
+<li><code>09</code> 准备并执行第三个 change：dashboard 可见优化。</li>
+<li><code>10</code> 准备并执行第四个 change：QR base URL 配置硬化，并记录 no visible evidence 和验证报告。</li>
+<li><code>11</code> 完成四个 change 的 validate / archive 收口，再复盘并整理可迁移工作流。</li>
+</ul>
+<h3 id="第-3-步-先理解-openspec-是什么">第 3 步：先理解 OpenSpec 是什么</h3>
+<p>OpenSpec 官方 README、concepts 和 getting-started 文档都在强调同一件事：在 AI 开始写代码之前，先让人和 AI 对“到底要改什么”达成一致。它不是让你多写几份 Markdown，而是给 AI 编程加一层轻量的 <strong>Spec-Driven Development（规格驱动开发）</strong>。</p>
+<p>没有 OpenSpec 时，新手很容易这样开始：</p>
+<pre><code class="language-text">“Claude，帮我优化这个项目。”
+</code></pre>
+<p>这句话太大了。AI 不知道优化边界在哪里，也不知道哪些行为不能破坏。OpenSpec 要你先把大意图变成一个明确 change：为什么做、做什么、不做什么、怎样验证。</p>
+<h4 id="openspec-的目录模型">OpenSpec 的目录模型</h4>
+<p>OpenSpec 初始化后，项目里会出现一个 <code>openspec/</code> 目录。你先记住两个核心位置：</p>
+<pre><code class="language-text">openspec/
+├── specs/                 # source of truth：当前系统应该具备的行为
+└── changes/               # proposed changes：还没完成或正在推进的 change
+    └── &lt;change-name&gt;/
+</code></pre>
+<p><code>openspec/specs/</code> 是长期事实源，描述系统当前应该怎样工作。<br />
+<code>openspec/changes/&lt;change-name&gt;/</code> 是某一次变更的工作区，描述这次准备新增、修改或移除什么。</p>
+<p>所以 OpenSpec 的关键单位不是“聊天对话”，而是 <strong>change 文件夹</strong>。聊天会丢上下文，change 文件夹会留下可读、可检查、可归档的记录。</p>
+<h4 id="一个-change-文件夹里有什么">一个 change 文件夹里有什么</h4>
+<p>一个典型 change 会长这样：</p>
+<pre><code class="language-text">openspec/changes/quality-baseline/
+├── proposal.md
+├── design.md
+├── tasks.md
+├── .openspec.yaml
+└── specs/
+    └── assignment/
+        └── spec.md
+</code></pre>
+<p>每个文件的职责不同：</p>
+<table>
+<thead>
+<tr>
+  <th>文件</th>
+  <th>主要回答</th>
+  <th>新手理解</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>proposal.md</code></td>
+  <td>为什么做、做什么、范围到哪里</td>
+  <td>change 的开题说明</td>
+</tr>
+<tr>
+  <td><code>specs/.../spec.md</code></td>
+  <td>外部行为和验收场景怎么变化</td>
+  <td>需求事实源，不写太多实现细节</td>
+</tr>
+<tr>
+  <td><code>design.md</code></td>
+  <td>技术上准备怎么做</td>
+  <td>实现思路、架构取舍、风险</td>
+</tr>
+<tr>
+  <td><code>tasks.md</code></td>
+  <td>按什么顺序实现和验证</td>
+  <td>可勾选的任务清单</td>
+</tr>
+<tr>
+  <td><code>.openspec.yaml</code></td>
+  <td>这个 change 的元信息</td>
+  <td>工具识别 change 状态时使用</td>
+</tr>
+</tbody>
+</table>
+<p>一个容易混淆但很重要的点是：<code>specs/</code> 更应该写“外部可见行为”和“可验证场景”，不应该把实现细节全塞进去。实现细节应该放在 <code>design.md</code> 和 <code>tasks.md</code>。</p>
+<h4 id="artifact-flow-从意图到实现">Artifact flow：从意图到实现</h4>
+<p>OpenSpec 的 artifact 不是随便摆在一起的。它们大致形成这条链路：</p>
+<pre><code class="language-text">proposal -&gt; specs -&gt; design -&gt; tasks -&gt; implement -&gt; verify -&gt; archive
+   why       what      how      steps      code       check      history
+</code></pre>
+<ul>
+<li><code>proposal</code> 先收住意图和范围。</li>
+<li><code>specs</code> 把这次行为变化写成可验证需求。</li>
+<li><code>design</code> 说明技术路线。</li>
+<li><code>tasks</code> 把实现拆成小步。</li>
+<li><code>verify</code> 对照 spec 和任务检查是否真的完成。</li>
+<li><code>archive</code> 把完成的 change 收进历史，并让长期 spec 更新。</li>
+</ul>
+<p>这条链路不是僵硬瀑布。OpenSpec 允许你在理解变深后回头修正前面的 artifact。比如实现时发现一个验收场景漏了，可以回到 <code>specs/</code> 补清楚。但原则是：<strong>代码实现必须能追溯回 OpenSpec 的需求和验收场景</strong>。</p>
+<h4 id="delta-spec-openspec-怎样表达-这次改了什么">Delta spec：OpenSpec 怎样表达“这次改了什么”</h4>
+<p>OpenSpec 里的 change spec 通常是 delta spec，也就是“相对当前系统，这次准备怎么变”。它常用三类标题：</p>
+<pre><code class="language-markdown">## ADDED Requirements
+## MODIFIED Requirements
+## REMOVED Requirements
+</code></pre>
+<p>每条 requirement 下面应该有可检查场景，常见写法是：</p>
+<pre><code class="language-markdown">### Requirement: Mentor assignment stays stable
+
+The system MUST keep query creation and mentor assignment behavior working while assignment tests are added.
+
+#### Scenario: query can still be assigned
+- GIVEN a query exists and a mentor exists
+- WHEN an admin assigns the query to that mentor
+- THEN the query records the assigned mentor without breaking existing pages
+</code></pre>
+<p>这里的重点不是英文格式，而是思维方式：OpenSpec 要你把“我想优化一下”变成“在什么条件下，做什么动作，应该得到什么结果”。</p>
+<h4 id="archive-为什么-change-完成后还要归档">Archive：为什么 change 完成后还要归档</h4>
+<p>OpenSpec 的 archive 不是把文件扔进垃圾桶。完成一个 change 后，delta spec 会合并或同步到长期 <code>openspec/specs/</code>，change 文件夹会进入 archive，留下当时的 proposal、design、tasks 和 spec 变化。</p>
+<p>这给真实项目带来两个好处：</p>
+<ul>
+<li>以后能看到系统当前规格是什么，而不是只翻代码猜行为；</li>
+<li>以后能回看当初为什么这么改，而不是只看到最后一堆 diff。</li>
+</ul>
+<h4 id="人和-ai-在-openspec-里各负责什么">人和 AI 在 OpenSpec 里各负责什么</h4>
+<p>你不要把 OpenSpec 理解成“AI 自动决定需求”。更好的分工是：</p>
+<table>
+<thead>
+<tr>
+  <th>角色</th>
+  <th>负责什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>学生 / 开发者</td>
+  <td>提供目标、背景、限制条件，审查范围是否正确</td>
+</tr>
+<tr>
+  <td>Claude Code</td>
+  <td>根据上下文起草 proposal、spec、design、tasks</td>
+</tr>
+<tr>
+  <td>OpenSpec CLI / workflow</td>
+  <td>组织 artifact、提供状态检查、帮助 verify 和 archive</td>
+</tr>
+<tr>
+  <td>测试和人工验证</td>
+  <td>证明代码真的满足 spec</td>
+</tr>
+</tbody>
+</table>
+<p>也就是说，AI 可以帮你写 artifact，但不能替你决定边界是否合理。你仍然要检查：这个 change 有没有变太大？有没有漏掉验收场景？有没有把实现细节写进 spec？</p>
+<h4 id="用本课程-change-1-举例">用本课程 Change 1 举例</h4>
+<p>Change 1 <code>quality-baseline</code> 不是要加大功能，而是给导师分配和问题创建建立质量基线。用 OpenSpec 看，它大概会这样拆：</p>
+<table>
+<thead>
+<tr>
+  <th>Artifact</th>
+  <th>在 Change 1 里应该表达什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>proposal.md</code></td>
+  <td>为什么先补测试：真实项目已有行为需要被保护，后续优化不能靠感觉</td>
+</tr>
+<tr>
+  <td><code>specs/.../spec.md</code></td>
+  <td>query 创建、mentor assignment、相关页面不能回归</td>
+</tr>
+<tr>
+  <td><code>design.md</code></td>
+  <td>测试策略：哪些 service / route / 页面行为要覆盖，哪些先不碰</td>
+</tr>
+<tr>
+  <td><code>tasks.md</code></td>
+  <td>先写失败测试，再补 fixture，再跑回归，再记录网页 evidence</td>
+</tr>
+</tbody>
+</table>
+<p>这也解释了为什么 Change 1 是 <code>no visible change</code>：OpenSpec 保护的是行为和边界，测试增强本身不一定让页面长得不一样。</p>
+<h4 id="openspec-不替代测试">OpenSpec 不替代测试</h4>
+<p>OpenSpec 说清楚 <strong>什么应该为真</strong>。<br />
+测试证明 <strong>代码现在真的满足它</strong>。</p>
+<h4 id="学生每次使用-openspec-前的检查清单">学生每次使用 OpenSpec 前的检查清单</h4>
+<p>后面每一轮 change 开始前，先问自己五个问题：</p>
+<ul>
+<li>我现在到底在做哪个 change？</li>
+<li>这个 change 要新增、修改或保护哪个行为？</li>
+<li>哪些 scenario 能证明它完成？</li>
+<li>什么明确不在这次范围内？</li>
+<li>完成后我要怎样 verify、怎样 archive？</li>
+</ul>
+<p>你可以先把 OpenSpec 理解成：<strong>让需求、边界、验收场景和 change 历史不要丢在聊天记录里的工作流</strong>。</p>
+<h3 id="第-4-步-再理解-superpowers-是什么">第 4 步：再理解 Superpowers 是什么</h3>
+<p>根据 <a href="https://claude.com/plugins/superpowers">Superpowers plugin</a> 页面、<a href="https://github.com/obra/superpowers">Superpowers GitHub README</a> ，Superpowers 不是一个单一命令，也不是“让 Claude 更聪明”的魔法开关。它更像是给 coding agent 装上一套可组合的 <strong>skills framework</strong>：每个 skill 都是一份明确的工作方法，告诉 agent 在某类任务里应该按什么顺序思考、产出什么 artifact、什么时候停下来验证。</p>
+<p>你可以先把 Superpowers 理解成：<strong>把资深工程师的流程纪律写成 agent 可以执行的技能包</strong>。</p>
+<h4 id="skill-的技术原则">Skill 的技术原则</h4>
+<p>Claude 本来就“知道”什么是测试、计划和 review。但知道不等于每次都会做，也不等于会按正确顺序做。Superpowers 的价值在于把这些做法变成更明确、更可重复、更难跳过的流程。</p>
+<p>一个 skill 通常会包含：</p>
+<ul>
+<li>什么时候应该使用这个 skill；</li>
+<li>使用时必须遵守的步骤；</li>
+<li>需要产出的文件或检查结果；</li>
+<li>哪些行为是反模式；</li>
+<li>什么时候可以进入下一个 skill。</li>
+</ul>
+<p>所以 Superpowers 的核心不是“提示词更长”，而是：</p>
+<pre><code class="language-text">任务类型 -&gt; 选择合适 skill -&gt; 按 skill 流程推进 -&gt; 产出 artifact -&gt; 验证后进入下一步
+</code></pre>
+<h4 id="skill-怎么被使用">Skill 怎么被使用</h4>
+<p>在实际使用时，skill 可能通过几种方式进入流程：</p>
+<table>
+<thead>
+<tr>
+  <th>方式</th>
+  <th>含义</th>
+  <th>学生该怎么理解</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>直接调用</td>
+  <td>你明确说“使用 Superpowers brainstorming”</td>
+  <td>适合课程练习，最清楚</td>
+</tr>
+<tr>
+  <td>自动触发</td>
+  <td>agent 判断当前任务符合某个 skill 的描述</td>
+  <td>省力，但仍要检查结果</td>
+</tr>
+<tr>
+  <td>skill 串联</td>
+  <td>一个 skill 完成后要求进入下一个 skill</td>
+  <td>例如 brainstorming 之后进入 writing-plans</td>
+</tr>
+</tbody>
+</table>
+<p>为了让新手不迷路，会尽量使用明确提示：告诉 Claude 当前 OpenSpec change 是什么、要使用哪个 Superpowers skill、产物要保存到哪个目录、完成后要报告真实路径。</p>
+<h4 id="superpowers-的基本工作流">Superpowers 的基本工作流</h4>
+<p>Superpowers README 把基本流程描述成一条从设计到执行再到收尾的链路。课程里你可以先记住这个简化版：</p>
+<pre><code class="language-text">brainstorming -&gt; writing-plans -&gt; TDD execution -&gt; review -&gt; verification -&gt; finishing
+</code></pre>
+<p>它和 OpenSpec 的关系不是重复，而是接力：</p>
+<pre><code class="language-text">OpenSpec 给出 change 边界
+Superpowers 把边界转成设计、计划、TDD、review 和验证纪律
+</code></pre>
+<h4 id="review-的三层模型">Review 的三层模型</h4>
+<p>本课程里 <code>Review</code> 不是一句“看起来不错”，而是一个证据检查点：<strong>检查 AI / subagent 的输出是否符合 OpenSpec、真实 plan、<code>git diff</code> 和代码质量要求</strong>。</p>
+<p>先记住三层：</p>
+<table>
+<thead>
+<tr>
+  <th>Review 层</th>
+  <th>主要问题</th>
+  <th>常见证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>scope/spec review</code></td>
+  <td>这次改动是否仍在 OpenSpec change 和 plan 范围内？</td>
+  <td>OpenSpec artifacts、真实 plan、Claude 总结</td>
+</tr>
+<tr>
+  <td><code>diff/code review</code></td>
+  <td>实际 diff 是否只改允许文件，代码和测试是否合理？</td>
+  <td><code>git diff --stat</code>、<code>git diff</code>、focused tests</td>
+</tr>
+<tr>
+  <td><code>completion/finishing review</code></td>
+  <td>所有 scope 是否具备进入 verify / archive 的条件？</td>
+  <td>测试结果、网页 evidence、verification docs、finishing 输出</td>
+</tr>
+</tbody>
+</table>
+<p><code>review</code> 和 <code>verify</code> 不一样。<code>review</code> 问的是：<strong>改得对不对、有没有越界、diff 是否可信</strong>。<code>verify</code> 问的是：<strong>测试、页面 evidence、verification report 或 <code>openspec validate</code> 是否证明它完成了</strong>。所以顺序通常是：先 review 输出，再运行 verify；review 不通过，就不要把测试结果当作完成证明。</p>
+<h4 id="这门课会用到哪些-skill">这门课会用到哪些 skill</h4>
+<table>
+<thead>
+<tr>
+  <th>Skill</th>
+  <th>什么时候用</th>
+  <th>主要产出 / 纪律</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>brainstorming</code></td>
+  <td>OpenSpec change 已存在，准备深化设计时</td>
+  <td>澄清需求、比较方案、保存 design doc</td>
+</tr>
+<tr>
+  <td><code>writing-plans</code></td>
+  <td>design doc 已通过检查后</td>
+  <td>生成小步 implementation plan</td>
+</tr>
+<tr>
+  <td><code>test-driven-development</code></td>
+  <td>开始实现 feature 或 bugfix 时</td>
+  <td>先写失败测试，看到 RED，再写最小 GREEN</td>
+</tr>
+<tr>
+  <td><code>subagent-driven-development</code></td>
+  <td>有完整 plan，适合逐任务执行时</td>
+  <td>按任务推进，并穿插 scope/spec review 与 diff/code review</td>
+</tr>
+<tr>
+  <td><code>executing-plans</code></td>
+  <td>不使用子代理或需要批量执行计划时</td>
+  <td>按 plan 分批实现并设置人工 checkpoint</td>
+</tr>
+<tr>
+  <td><code>requesting-code-review</code></td>
+  <td>完成一段实现后</td>
+  <td>对照 plan、diff 和代码质量找问题</td>
+</tr>
+<tr>
+  <td><code>verification-before-completion</code></td>
+  <td>想说“完成了”之前</td>
+  <td>先运行客观验证，避免只凭 Claude 口头判断</td>
+</tr>
+<tr>
+  <td><code>finishing-a-development-branch</code></td>
+  <td>所有任务完成后</td>
+  <td>做 completion/finishing review，整理分支或收尾选择</td>
+</tr>
+</tbody>
+</table>
+<p>这里最重要的是 <code>test-driven-development</code>。它强调：</p>
+<pre><code class="language-text">RED   -&gt; 先写失败测试，并确认它因为预期原因失败
+GREEN -&gt; 写最小实现，让测试通过
+REFACTOR -&gt; 在测试保持通过的前提下清理代码
+</code></pre>
+<p>这不是“写完代码以后补测试”。如果没有先看到失败测试，学生就不知道这个测试是不是真的能抓住问题。</p>
+<h4 id="superpowers-会产生哪些-artifact">Superpowers 会产生哪些 artifact</h4>
+<p>在本课程中，Superpowers 的主要文件会放在：</p>
+<pre><code class="language-text">docs/superpowers/specs/    # brainstorming 生成的设计文档
+docs/superpowers/plans/    # writing-plans 生成的执行计划
+</code></pre>
+<p>但文件名不能写死。Claude Code 可能生成一个合理但不同于示例的文件名，所以课程统一规则是：</p>
+<pre><code class="language-text">示例文件名只是提示；真实文件路径以 find 输出为准。
+</code></pre>
+<p>也就是说，后续每次要读取 Superpowers design doc 或 plan，都要先从磁盘发现实际路径，再把这个真实路径交给 Claude。</p>
+<p>同样要注意时间顺序：<code>docs/superpowers/specs/</code> 和 <code>docs/superpowers/plans/</code> 是后面课程步骤生成出来的目录，不是 startup repo 一开始就能看到的目录。</p>
+<h4 id="用-change-1-举例">用 Change 1 举例</h4>
+<p>Change 1 <code>quality-baseline</code> 已经由 OpenSpec 定义了边界：补质量基线，保护 query 创建和 mentor assignment，不趁机加新功能。</p>
+<p>Superpowers 在这里不应该重新发明需求，而应该这样接力：</p>
+<table>
+<thead>
+<tr>
+  <th>阶段</th>
+  <th>Superpowers 应该做什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>brainstorming</code></td>
+  <td>阅读 OpenSpec artifacts，澄清测试策略，确认不扩大功能范围</td>
+</tr>
+<tr>
+  <td>design doc</td>
+  <td>保存测试设计：覆盖哪些路径、哪些页面只做回归观察、哪些暂不碰</td>
+</tr>
+<tr>
+  <td><code>writing-plans</code></td>
+  <td>把测试设计拆成可以 TDD 执行的小任务</td>
+</tr>
+<tr>
+  <td>TDD execution</td>
+  <td>每个行为先写失败测试，再实现或补 fixture，再跑回归</td>
+</tr>
+<tr>
+  <td>review</td>
+  <td>对照 OpenSpec、plan 和 <code>git diff</code> 检查是否越界、是否只改了应该改的文件</td>
+</tr>
+<tr>
+  <td>verification</td>
+  <td>用测试结果和网页 evidence 证明行为没有回归</td>
+</tr>
+</tbody>
+</table>
+<p>如果 Claude 在 brainstorming 阶段开始写业务代码，说明流程跑偏了。你要停下来，把它拉回“先设计、再计划、再实现”。</p>
+<h4 id="这门课推荐的提示方式">这门课推荐的提示方式</h4>
+<p>后面你会看到更完整的 prompt。现在先记住几种句式：</p>
+<pre><code class="language-text">请基于这个 OpenSpec change 使用 Superpowers brainstorming：
+openspec/changes/&lt;change-name&gt;/
+
+请只做设计深化，不实现代码。
+请把 design doc 保存到 docs/superpowers/specs/ 下，并告诉我实际文件路径。
+</code></pre>
+<pre><code class="language-text">请基于这个真实 design doc 路径使用 Superpowers writing-plans：
+docs/superpowers/specs/&lt;actual-path&gt;.md
+
+请把 plan 保存到 docs/superpowers/plans/ 下，并告诉我实际文件路径。
+</code></pre>
+<pre><code class="language-text">请按这个真实 plan 路径执行 TDD：
+docs/superpowers/plans/&lt;actual-path&gt;.md
+
+每个行为先写失败测试，确认 RED，再写最小实现，最后运行验证命令。
+</code></pre>
+<p>这些提示不是为了控制 Claude 的每一句输出，而是为了控制工作流的边界、输入和客观验证。</p>
+<h4 id="使用-superpowers-前的检查清单">使用 Superpowers 前的检查清单</h4>
+<p>每次进入 Superpowers 阶段前，先检查：</p>
+<ul>
+<li>我有没有把真实 OpenSpec change 路径交给 Claude？</li>
+<li>我有没有让 Claude 只做当前 skill 该做的事？</li>
+<li>我有没有用 <code>find</code> 发现真实 design doc 或 plan 路径？</li>
+<li>Claude 是否先处理范围和设计，再进入实现？</li>
+<li>实现是否从失败测试开始，而不是先写代码？</li>
+<li>Claude 说完成之前，我有没有看到测试、review 或 evidence？</li>
+</ul>
+<p>你可以先把 Superpowers 理解成：<strong>给 Claude Code 加上一整套工程执行纪律，但最终仍由学生用真实文件和真实验证结果来判断是否完成</strong>。</p>
+<h3 id="第-5-步-把两者放在一起比较">第 5 步：把两者放在一起比较</h3>
+<p>下面这张表是本节最重要的内容。不要背句子，要看懂边界。</p>
+<table>
+<thead>
+<tr>
+  <th>维度</th>
+  <th>OpenSpec</th>
+  <th>Superpowers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>定位</td>
+  <td>规格驱动 change 工作流</td>
+  <td>Claude Code 的技能化开发方法</td>
+</tr>
+<tr>
+  <td>解决的问题</td>
+  <td>需求容易散落、边界容易失控、历史难追踪</td>
+  <td>实现容易发散、测试容易缺失、review 容易被跳过</td>
+</tr>
+<tr>
+  <td>核心产物</td>
+  <td><code>proposal.md</code>、<code>specs/</code>、<code>design.md</code>、<code>tasks.md</code>、archive</td>
+  <td>brainstorming 输出、design doc、implementation plan、测试与 review 结果</td>
+</tr>
+<tr>
+  <td>何时使用</td>
+  <td>在写代码前定义 change；完成后归档</td>
+  <td>在规格基础上深化设计、拆计划、TDD 实现、review、收尾</td>
+</tr>
+<tr>
+  <td>不负责什么</td>
+  <td>不保证实现质量，不天然强制 TDD</td>
+  <td>不天然保存 durable spec 历史，不该替代正式需求事实源</td>
+</tr>
+</tbody>
+</table>
+<p>如果你只记一句话，可以记这句：</p>
+<pre><code class="language-text">OpenSpec 管 change 的“为什么做、做什么、边界在哪里”；
+Superpowers 管 change 的“怎样更稳地做出来”。
+</code></pre>
+<h3 id="第-6-步-理解为什么不要混淆它们">第 6 步：理解为什么不要混淆它们</h3>
+<p>这门课把两者一起讲清楚，是因为很多新手会产生三个误解。</p>
+<p>第一个误解：<code>OpenSpec 是自动写代码工具</code>。<br />
+不是。OpenSpec 更像是一个 change 管理框架，重点是 proposal、spec、design、tasks 和 archive，不是直接替你把代码质量做好。</p>
+<p>第二个误解：<code>Superpowers 是另一份 spec</code>。<br />
+不是。Superpowers 也会产出 design doc 和 plan，但那是执行层面的设计和计划，不应该取代 OpenSpec 里的需求边界。</p>
+<p>第三个误解：<code>两者结合就是让 AI 更快乱写</code>。<br />
+也不是。恰恰相反，二者结合的价值是：<strong>先锁边界，再强制纪律</strong>。先用 OpenSpec 把 change 收住，再用 Superpowers 把实现过程收住。</p>
+<h3 id="第-7-步-理解为什么本课程同时使用它们">第 7 步：理解为什么本课程同时使用它们</h3>
+<p>如果只用 OpenSpec，你会更容易把需求说清楚，但实现阶段仍然可能缺测试、缺 review、缺小步验证。也就是说，“spec 比较稳”，但“代码不一定稳”。</p>
+<p>如果只用 Superpowers，你会更容易得到结构化的设计、计划、TDD 和 review，但前面的需求和 change 历史可能仍然散落在聊天里。也就是说，“代码过程比较稳”，但“规格历史不一定稳”。</p>
+<p>所以本课程选择的组合是：</p>
+<pre><code class="language-text">OpenSpec 负责规格驱动开发（SDD）
++ Superpowers 负责测试驱动和工程纪律（TDD + Review）
+= 更适合真实项目优化的双驱动工作流
+</code></pre>
+<h3 id="第-8-步-建立这门课的工作流总览">第 8 步：建立这门课的工作流总览</h3>
+<p>你现在已经有足够上下文来理解本课程主流程了：</p>
+<pre><code class="language-text">学会本地 Git -&gt; 读懂 Remote GitHub 并记录基线 -&gt; OpenSpec propose
+-&gt; Superpowers brainstorm -&gt; Superpowers write-plan -&gt; Change 1 质量基线
+-&gt; subagent 执行判断 -&gt; Change 2 Slack bugfix -&gt; Change 3 dashboard 准备与执行
+-&gt; Change 4 QR 配置准备与执行 -&gt; validate/archive 收口 -&gt; 复盘迁移
+</code></pre>
+<h3 id="第-9-步-写统一开场笔记">第 9 步：写统一开场笔记</h3>
+<p>你不需要写成长文，但要把下面两部分都落进 <code>notes/tool-comparison.md</code>：</p>
+<ul>
+<li><code>我的进阶工作流概念卡</code></li>
+<li><code>OpenSpec 与 Superpowers 对照笔记</code></li>
+</ul>
+<h2 id="验收标准">验收标准</h2>
+<p>除第 0 步创建目录外，不用运行项目命令。检查 <code>learn_vibe_adv/notes/</code> 已存在，并确认 <code>notes/tool-comparison.md</code> 或等价笔记是否能回答：</p>
+<ul>
+<li>为什么这门课不从零写项目？</li>
+<li>OpenSpec 的 change 文件夹里通常有什么？</li>
+<li>OpenSpec 和 Superpowers 分别负责什么？</li>
+<li>你为什么要先写失败测试，而不是写完代码再补测试？</li>
+<li><code>Red -&gt; Green -&gt; Refactor</code> 分别在做什么？</li>
+<li>Superpowers 在这门课里最关键的几个技能是什么？</li>
+<li>本课程默认做哪四个 change？</li>
+<li>为什么 <code>stabilize-slack-notification-config</code> 是独立 bugfix，而不是混进质量基线？</li>
+<li>visible change、no visible change、artifact-only preparation 分别是什么意思？</li>
+</ul>
+<p>通过标准：</p>
+<ul>
+<li><code>learn_vibe_adv/notes/</code> 已经存在，能保存 <code>tool-comparison.md</code>。</li>
+<li>你能说出“OpenSpec 是需求事实源，Superpowers 是执行纪律”。</li>
+<li>你能用自己的话解释 TDD 为什么强调“先失败测试，再最小实现”。</li>
+<li>你知道后面每次改代码都必须先有 change。</li>
+<li>你知道 <code>06</code> 写 TDD 计划，<code>07</code> 用 TDD + subagent 执行质量基线，<code>08</code> 用 bugfix 练习真实 TDD 修复，后面会分别练习可见变化和不可见变化。</li>
+<li>你的笔记包含“我的进阶工作流概念卡”和“OpenSpec 与 Superpowers 对照笔记”。</li>
+</ul>
+<p>需要停下处理：</p>
+<ul>
+<li>如果你想直接让 Claude “把这个项目优化一下”，先回到本节，把四个 change 和工具分工写清楚。</li>
+<li>如果你准备在本节 clone <code>OverClocked-Helpdesk</code>、安装依赖、启动项目、初始化 OpenSpec 或创建 <code>openspec/</code>，先停下；这些都属于后面章节。</li>
+</ul>
+<h2 id="常见卡点">常见卡点</h2>
+<ul>
+<li>把 OpenSpec 当成普通文档，而不是变更生命周期。</li>
+<li>把 Superpowers 当成“更会写代码的提示词”，忽略它的 TDD 和 Review 纪律。</li>
+<li>看到 <code>design.md</code> 和 plan，就以为 OpenSpec 与 Superpowers 重复了。</li>
+<li>把 plugin、skills、slash commands、workflow 混成一个概念。</li>
+<li>一开始就想加登录、WebSocket、Docker、部署和复杂权限。</li>
+<li>把第 0 步误解成项目初始化；它只是在学习工作区里创建课程笔记目录。</li>
+</ul>
+<h2 id="参考来源">参考来源</h2>
+<ul>
+<li>本地参考：<code>Clippings/OpenSpec + Superpowers SDD+TDD 双驱动 AI 编程工作流.md</code></li>
+<li><a href="https://github.com/Fission-AI/OpenSpec">OpenSpec GitHub</a></li>
+<li>OpenSpec concepts</li>
+<li><a href="https://claude.com/plugins/superpowers">Superpowers plugin</a></li>
+<li><a href="https://code.claude.com/docs/en/slash-commands">Claude Code skills docs</a></li>
+</ul>
+
+      </article>
+      <footer class="footer">Created by Walter and Codex at 2026-06-11 23:37.</footer>
+    </main>
+  </div>
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

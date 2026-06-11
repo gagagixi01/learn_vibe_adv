@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>06. 用 Superpowers 写可执行 TDD 计划</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <button class="menu-button" type="button" aria-controls="sidebar" aria-expanded="false">目录</button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">Vibe Coding Adv Reader</div>
+      <nav><a class="nav-link nav-home" href="../index.html">课程首页</a>
+<div class="nav-section">阅读入口</div>
+<a class="nav-link " href="../article.html">长文导读</a>
+<a class="nav-link " href="README.html">课程 README</a>
+<div class="nav-section">分节指南</div>
+<a class="nav-link " href="00_overview.html">00 从做小项目到优化真实项目</a>
+<a class="nav-link " href="01_repo_selection_and_workflow.html">01 选择真实项目，并看懂双工具工作流</a>
+<a class="nav-link " href="02_git_basics.html">02 先学会本地 Git，再开始真实项目</a>
+<a class="nav-link " href="03_clone_and_baseline.html">03 远程 GitHub、克隆项目并记录基线</a>
+<a class="nav-link " href="04_openspec_proposal.html">04 创建 Change 1 OpenSpec</a>
+<a class="nav-link " href="05_superpowers_brainstorm.html">05 用 Superpowers 深化设计，但不替代 OpenSpec</a>
+<a class="nav-link active" href="06_superpowers_write_plan.html">06 用 Superpowers 写可执行 TDD 计划</a>
+<a class="nav-link " href="07_tdd_subagent_execution.html">07 用 TDD + subagent 执行 Change 1</a>
+<a class="nav-link " href="08_slack_notification_bugfix.html">08 执行 Change 2</a>
+<a class="nav-link " href="09_dashboard_change.html">09 准备并执行 Change 3</a>
+<a class="nav-link " href="10_qr_change.html">10 准备并执行 Change 4</a>
+<a class="nav-link " href="11_reflection_and_transfer.html">11 最终收口并复盘迁移这套工作流</a></nav>
+    </aside>
+    <main class="content">
+      <header class="page-header">
+        <h1>06. 用 Superpowers 写可执行 TDD 计划</h1>
+        <div class="source-label">Source: guide/06_superpowers_write_plan.md</div>
+        <nav class="page-links"><a href="05_superpowers_brainstorm.html">上一页：05 用 Superpowers 深化设计，但不替代 OpenSpec</a>
+<a href="07_tdd_subagent_execution.html">下一页：07 用 TDD + subagent 执行 Change 1</a></nav>
+      </header>
+      <article class="markdown-body">
+<h2 id="预计用时">预计用时</h2>
+<p>35-50 分钟。</p>
+<h2 id="本节位置">本节位置</h2>
+<p>上一节已经完成 Change 1 的 <code>Superpowers</code> 设计深化：OpenSpec change 已经在 <code>04</code> 里建起来，设计文档也已在 <code>05</code> 里生成。</p>
+<p>本节只进入 planning 阶段：把 Change 1 和 design doc 转成可执行的 TDD 实施计划。计划必须能交给另一个 agent 或未来的自己逐条执行，不需要再猜文件、命令或测试顺序。</p>
+<h2 id="工具使用规则">工具使用规则</h2>
+<ul>
+<li>终端用于记录 <code>git rev-parse HEAD</code> 和查看计划文件。</li>
+<li><code>Claude Code CLI</code> 用于调用 <code>superpowers:writing-plans</code>。</li>
+<li>本节只写计划，不实现代码。</li>
+</ul>
+<h2 id="学习目标">学习目标</h2>
+<ul>
+<li>生成一份可执行的 TDD 实施计划。</li>
+<li>确认每个任务都有测试先行步骤。</li>
+<li>记录 <code>base-ref</code>，方便后续 review diff。</li>
+</ul>
+<h2 id="本节产出物">本节产出物</h2>
+<ul>
+<li><code>learn_vibe_adv/overclocked-helpdesk-lab/docs/superpowers/plans/</code> 下的新 Change 1 实施计划（文件名以 Claude 实际生成结果为准）</li>
+</ul>
+<h2 id="操作步骤">操作步骤</h2>
+<h3 id="第-1-步-记录-base-ref">第 1 步：记录 base-ref</h3>
+<p>在终端执行：</p>
+<pre><code class="language-bash">cd learn_vibe_adv/overclocked-helpdesk-lab
+git rev-parse HEAD
+</code></pre>
+<p>复制输出的 commit SHA。后续计划头部要记录这个 <code>base-ref</code>。</p>
+<h3 id="第-2-步-确认写计划前的三个输入值">第 2 步：确认写计划前的三个输入值</h3>
+<p>这一步先准备好三项上下文：</p>
+<ul>
+<li><code>change-dir</code>：当前 OpenSpec change 目录名</li>
+<li><code>design-doc</code>：你在 <code>05</code> 里记录下来的 Superpowers design doc 真实路径</li>
+<li><code>base-ref</code>：刚才记录下来的 commit SHA</li>
+</ul>
+<p>下面是课程示例值，实际使用时要替换成你当前仓库里的真实值：</p>
+<ul>
+<li>OpenSpec change：<code>openspec/changes/quality-baseline/</code></li>
+<li>Design Doc：<code>docs/superpowers/specs/&lt;actual-design-doc-path&gt;.md</code></li>
+<li>base-ref：<code>&lt;paste-your-real-git-rev-parse-head-output&gt;</code></li>
+</ul>
+<h3 id="第-3-步-调用-writing-plans">第 3 步：调用 writing-plans</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请使用 superpowers:writing-plans，基于以下材料创建 quality-baseline TDD 实施计划：
+
+- OpenSpec change: openspec/changes/&lt;paste change-dir&gt;/
+- Design Doc: &lt;paste the actual design-doc path you recorded in 05&gt;
+- base-ref: &lt;paste-your-real-git-rev-parse-head-output&gt;
+
+计划要求：
+1. 保存到 docs/superpowers/plans/ 下，并在完成后告诉我实际文件路径；
+2. 每个任务必须按 TDD 写：先写失败测试，运行并确认失败，再实现最小代码，再运行通过；
+3. quality-baseline 只覆盖 mentor assignment 和 query creation 的质量基线；
+4. 不加入登录、WebSocket、Docker、analytics、UI 重做；
+5. 每个任务写清文件、命令和预期输出；凡是 python -m pip、python -m pytest、uvicorn 这类命令，都默认先激活 .venv；
+6. 如果某一步只记录当前行为，不改变实现，要明确写出。
+</code></pre>
+<h3 id="第-4-步-审查计划是否可执行">第 4 步：审查计划是否可执行</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请自审刚写的计划：
+1. 有没有 TBD、TODO、适当测试、类似上一任务 这类占位话；
+2. 有没有生产代码早于失败测试；
+3. 有没有超出 quality-baseline 质量基线边界的任务；
+4. 每个 pytest 命令是否具体；
+5. 如发现问题，请只修改计划文件。
+</code></pre>
+<h3 id="第-5-步-确认计划路径">第 5 步：确认计划路径</h3>
+<p>在终端执行，先发现真实 plan 路径，再打开它：</p>
+<pre><code class="language-bash">find docs/superpowers/plans -type f | sort
+cat &lt;paste-the-actual-plan-path-you-recorded-from-step-3&gt;
+</code></pre>
+<h2 id="验收标准">验收标准</h2>
+<p>运行或检查计划文件。它至少必须包含：</p>
+<ul>
+<li>change 名称。</li>
+<li>design doc 路径。</li>
+<li><code>base-ref</code>。</li>
+<li>TDD 步骤。</li>
+<li>具体测试命令。</li>
+<li>明确不做事项。</li>
+<li>真实 plan 路径，而不是猜测出来的示例文件名。</li>
+</ul>
+<p>通过标准：</p>
+<ul>
+<li>计划任务可以逐条执行，不需要额外猜测。</li>
+<li>你已经记录并复用了真实的 design doc 路径和真实的 plan 路径。</li>
+<li>每个编码任务都先写测试，再做最小实现。</li>
+<li>计划仍然只服务 Change 1 OpenSpec change。</li>
+<li>本节结束时仍然没有开始执行任务。</li>
+</ul>
+<p>需要停下处理：</p>
+<ul>
+<li>如果计划只写“添加测试并修复代码”，要求 Claude 重写成红绿重构步骤。</li>
+<li>如果你已经开始跑第一条任务，那说明你把 <code>06</code> 和 <code>07</code> 混在一起了。</li>
+</ul>
+<h2 id="常见卡点">常见卡点</h2>
+<ul>
+<li>计划太像任务清单，没有具体命令。</li>
+<li>没有先发现真实路径，就直接假设 Claude 会生成课程示例文件名。</li>
+<li>写了实现步骤，却没有先运行失败测试。</li>
+<li>Change 1 计划混入 UI 和 analytics。</li>
+<li>忘记把 <code>base-ref</code> 和真实文件路径写进计划。</li>
+</ul>
+
+      </article>
+      <footer class="footer">Created by Walter and Codex at 2026-06-11 23:37.</footer>
+    </main>
+  </div>
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

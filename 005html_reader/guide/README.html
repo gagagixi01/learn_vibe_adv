@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Python 新人 Vibecoding 进阶路线：用 OpenSpec + Superpowers 优化一个真实 GitHub 项目</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <button class="menu-button" type="button" aria-controls="sidebar" aria-expanded="false">目录</button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">Vibe Coding Adv Reader</div>
+      <nav><a class="nav-link nav-home" href="../index.html">课程首页</a>
+<div class="nav-section">阅读入口</div>
+<a class="nav-link " href="../article.html">长文导读</a>
+<a class="nav-link active" href="README.html">课程 README</a>
+<div class="nav-section">分节指南</div>
+<a class="nav-link " href="00_overview.html">00 从做小项目到优化真实项目</a>
+<a class="nav-link " href="01_repo_selection_and_workflow.html">01 选择真实项目，并看懂双工具工作流</a>
+<a class="nav-link " href="02_git_basics.html">02 先学会本地 Git，再开始真实项目</a>
+<a class="nav-link " href="03_clone_and_baseline.html">03 远程 GitHub、克隆项目并记录基线</a>
+<a class="nav-link " href="04_openspec_proposal.html">04 创建 Change 1 OpenSpec</a>
+<a class="nav-link " href="05_superpowers_brainstorm.html">05 用 Superpowers 深化设计，但不替代 OpenSpec</a>
+<a class="nav-link " href="06_superpowers_write_plan.html">06 用 Superpowers 写可执行 TDD 计划</a>
+<a class="nav-link " href="07_tdd_subagent_execution.html">07 用 TDD + subagent 执行 Change 1</a>
+<a class="nav-link " href="08_slack_notification_bugfix.html">08 执行 Change 2</a>
+<a class="nav-link " href="09_dashboard_change.html">09 准备并执行 Change 3</a>
+<a class="nav-link " href="10_qr_change.html">10 准备并执行 Change 4</a>
+<a class="nav-link " href="11_reflection_and_transfer.html">11 最终收口并复盘迁移这套工作流</a></nav>
+    </aside>
+    <main class="content">
+      <header class="page-header">
+        <h1>Python 新人 Vibecoding 进阶路线：用 OpenSpec + Superpowers 优化一个真实 GitHub 项目</h1>
+        <div class="source-label">Source: README.md</div>
+        <nav class="page-links"><a href="../article.html">上一页：长文导读</a>
+<a href="00_overview.html">下一页：00 从做小项目到优化真实项目</a></nav>
+      </header>
+      <article class="markdown-body">
+<p>这是一套承接 <code>learn_vibe</code> 的中文进阶课程。入门课从零做一个最小任务管理系统；进阶课不再从零开始，而是克隆一个已经存在的 GitHub 项目，用 <code>Claude Code</code>、<code>OpenSpec</code> 和 <code>Superpowers</code> 完成真实代码库的理解、基线验证、规格驱动优化、测试驱动实现、Review 和归档。</p>
+<p>本课程选用的练习项目是 <a href="https://github.com/gagagixi01/OverClocked-Helpdesk">gagagixi01/OverClocked-Helpdesk</a>。它是一个面向黑客松和校园活动的 Helpdesk 系统，技术栈包含 <code>FastAPI</code>、<code>SQLite</code>、<code>SQLAlchemy</code>、<code>Jinja2</code> 和 <code>Uvicorn</code>。项目规模不大，但包含团队提交问题、导师响应、管理员管理等多角色流程，足够练习更复杂的 AI 编程工作流。</p>
+<p>本课程的起点是一个刚刚 <code>git clone</code> 下来的 upstream 仓库。学生一开始看到的应该是原始项目目录；<code>openspec/</code>、<code>docs/current-capabilities.md</code>、<code>docs/superpowers/</code>、新增测试和 <code>docs/verification/</code> 都是后续课程逐步创建出来的产物，不应该被理解成 startup repo 自带内容。</p>
+<h2 id="学习目标">学习目标</h2>
+<p>完成本课程后，你应该能做到：</p>
+<ul>
+<li>先理解 <code>OpenSpec</code> 和 <code>Superpowers</code> 的职责，再开始在真实项目里使用它们。</li>
+<li>在已有代码库里先读懂结构，再让 AI 修改代码。</li>
+<li>使用 <code>OpenSpec</code> 创建、验证和归档变更规格。</li>
+<li>使用 <code>Superpowers</code> 做需求澄清、设计深化、TDD 计划、subagent 执行判断和 Review。</li>
+<li>理解 <code>Review</code> 的三层检查：<code>scope/spec review</code>、<code>diff/code review</code>、<code>completion review</code>。</li>
+<li>用测试和手动验证记录优化前后的行为变化。</li>
+<li>区分 visible change、no visible change 和 artifact-only preparation，并用网页证据表记录差异。</li>
+<li>能区分 <code>Review</code>、<code>verification report</code>、<code>openspec validate</code> 和 <code>archive</code> 的职责。</li>
+<li>把 <code>OpenSpec propose -&gt; Superpowers brainstorm -&gt; write-plan -&gt; TDD -&gt; Review -&gt; verification report -&gt; validate -&gt; archive</code> 变成可复用工作流。</li>
+</ul>
+<h2 id="课程目录">课程目录</h2>
+<ol>
+<li><code>guide/00_overview.md</code></li>
+<li><code>guide/01_repo_selection_and_workflow.md</code></li>
+<li><code>guide/02_git_basics.md</code></li>
+<li><code>guide/03_clone_and_baseline.md</code></li>
+<li><code>guide/04_openspec_proposal.md</code></li>
+<li><code>guide/05_superpowers_brainstorm.md</code></li>
+<li><code>guide/06_superpowers_write_plan.md</code></li>
+<li><code>guide/07_tdd_subagent_execution.md</code></li>
+<li><code>guide/08_slack_notification_bugfix.md</code></li>
+<li><code>guide/09_dashboard_change.md</code></li>
+<li><code>guide/10_qr_change.md</code></li>
+<li><code>guide/11_reflection_and_transfer.md</code></li>
+</ol>
+<h2 id="练习路线">练习路线</h2>
+<p>本课程先用 <code>00</code>、<code>01</code> 让学生理解 <code>OpenSpec</code> 与 <code>Superpowers</code> 以及它们在真实项目里的配合方式，再用 <code>02</code> 学会本地 Git，用 <code>03</code> 理解 Remote GitHub、克隆项目并记录基线，最后从 fresh clone 进入真实项目优化。后续练习围绕四个独立 change 展开：</p>
+<ul>
+<li>Change 1 <code>quality-baseline</code>：补充导师分配和问题创建测试，建立质量基线。结果通常是 <code>no visible change</code>。</li>
+<li>Change 2 <code>stabilize-slack-notification-config</code>：把 baseline 中发现的 Slack 配置风险变成一个独立 bugfix。结果通常是 <code>no visible change</code>。</li>
+<li>Change 3 <code>optimize-dashboard-readability</code>：改进管理端和导师端仪表盘可读性，增加轻量统计和状态可见性。结果是 <code>visible change</code>。</li>
+<li>Change 4 <code>configure-qr-base-url</code>：让 QR 码生成使用可配置 base URL，默认本地页面体验保持不变。结果是 <code>no visible change</code>。</li>
+</ul>
+<p>每一轮都必须经过规格、设计、计划、测试、实现、验证和归档。不要让 Claude Code 直接“优化整个项目”。先读懂 startup repo 的真实状态，再一步步把 OpenSpec、Superpowers artifacts、测试、subagent 执行判断和验证记录加上去。</p>
+<p><code>07</code> 会把 Change 1 的 TDD 执行和 <code>subagent-driven-development</code> 拆分、委派、review 边界合在一起练习；它不新增第五个 change，也不替代 TDD、验证或 evidence。</p>
+<p>从 <code>07</code> 开始，主会话必须对 AI 或 subagent 输出做三层 Review checkpoint：</p>
+<ul>
+<li><code>scope/spec review</code>：这次改动是否仍然属于当前 OpenSpec change 和真实 plan；</li>
+<li><code>diff/code review</code>：<code>git diff</code> 是否干净、允许文件范围是否正确、是否出现 unrelated changes；</li>
+<li><code>completion review</code>：当前结果是否已经具备进入 verification report、<code>openspec validate</code> 和 archive 的证据。</li>
+</ul>
+<p>从 <code>07</code> 开始，每次 change 都要用 <code>notes/webpage-change-evidence.md</code> 的模板记录 before / after。即使页面没有变化，也要写清这是 <code>no visible change</code>；如果某一节只准备 OpenSpec / Superpowers artifacts，还没有实现，就写清这是 <code>artifact-only preparation</code>，避免把“我没看到变化”误解成“这个 change 没有效果”。</p>
+<p>每个已执行 change 都要整理 <code>docs/verification/YYYY-MM-DD-&lt;change-name&gt;.md</code>。它不是额外作文，而是 Review 之后的证据汇总：至少记录测试命令与结果、网页 evidence 路径、OpenSpec 验收标准状态，以及 blocker。</p>
+<p>课程最后的收口顺序固定为：</p>
+<p><code>Review -&gt; verification report -&gt; openspec validate -&gt; archive</code></p>
+<p>可以把这四步理解成四个不同问题：</p>
+<ul>
+<li><code>Review</code>：这次改动对不对，有没有越界；</li>
+<li><code>verification report</code>：有哪些证据证明它已经完成；</li>
+<li><code>openspec validate</code>：OpenSpec artifacts 本身是否通过 CLI 校验；</li>
+<li><code>archive</code>：这个 change 是否已经可以进入长期规格历史。</li>
+</ul>
+<p>Claude Code 可能会生成一个与课程示例不同、但仍然有效的 spec / plan 文件名。课程里出现的示例文件名只是提示；真实文件系统才是事实源。后续步骤如果要继续使用某个生成文件，先用 <code>find ... | sort</code> 找到真实路径，再把这个真实路径贴回下一步的命令或提示词。</p>
+<h2 id="前置要求">前置要求</h2>
+<ul>
+<li>已完成 <code>coding_with_ai/learn_vibe/guide/00-10</code>。</li>
+<li>理解 <code>FastAPI</code>、<code>SQLite</code>、<code>Jinja2</code>、轻量 <code>SDD</code>、轻量 <code>TDD</code> 和 <code>Review</code>。</li>
+<li>本课程会在 <code>guide/02_git_basics.md</code> 中完成 Git 安装或验证，再在 <code>guide/03_clone_and_baseline.md</code> 中克隆项目。</li>
+<li>已安装并能使用 <code>Claude Code</code>。</li>
+<li>本课程会安装或使用 <code>OpenSpec</code> 与 <code>Superpowers</code>，具体步骤见 <code>04_openspec_proposal</code> 和 <code>05_superpowers_brainstorm</code>。</li>
+</ul>
+<h2 id="关键参考">关键参考</h2>
+<ul>
+<li>本地参考：<code>Clippings/OpenSpec + Superpowers SDD+TDD 双驱动 AI 编程工作流.md</code></li>
+<li><code>00</code> 与 <code>01</code> 建议先完整阅读本地 clipping，再进入后续章节</li>
+<li>OpenSpec: <a href="https://github.com/Fission-AI/OpenSpec">https://github.com/Fission-AI/OpenSpec</a></li>
+<li>Superpowers: <a href="https://claude.com/plugins/superpowers">https://claude.com/plugins/superpowers</a></li>
+<li>Claude Code Skills: <a href="https://code.claude.com/docs/en/slash-commands">https://code.claude.com/docs/en/slash-commands</a></li>
+</ul>
+
+      </article>
+      <footer class="footer">Created by Walter and Codex at 2026-06-11 23:37.</footer>
+    </main>
+  </div>
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

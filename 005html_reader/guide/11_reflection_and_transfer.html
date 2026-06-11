@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>11. 最终收口并复盘迁移这套工作流</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <button class="menu-button" type="button" aria-controls="sidebar" aria-expanded="false">目录</button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">Vibe Coding Adv Reader</div>
+      <nav><a class="nav-link nav-home" href="../index.html">课程首页</a>
+<div class="nav-section">阅读入口</div>
+<a class="nav-link " href="../article.html">长文导读</a>
+<a class="nav-link " href="README.html">课程 README</a>
+<div class="nav-section">分节指南</div>
+<a class="nav-link " href="00_overview.html">00 从做小项目到优化真实项目</a>
+<a class="nav-link " href="01_repo_selection_and_workflow.html">01 选择真实项目，并看懂双工具工作流</a>
+<a class="nav-link " href="02_git_basics.html">02 先学会本地 Git，再开始真实项目</a>
+<a class="nav-link " href="03_clone_and_baseline.html">03 远程 GitHub、克隆项目并记录基线</a>
+<a class="nav-link " href="04_openspec_proposal.html">04 创建 Change 1 OpenSpec</a>
+<a class="nav-link " href="05_superpowers_brainstorm.html">05 用 Superpowers 深化设计，但不替代 OpenSpec</a>
+<a class="nav-link " href="06_superpowers_write_plan.html">06 用 Superpowers 写可执行 TDD 计划</a>
+<a class="nav-link " href="07_tdd_subagent_execution.html">07 用 TDD + subagent 执行 Change 1</a>
+<a class="nav-link " href="08_slack_notification_bugfix.html">08 执行 Change 2</a>
+<a class="nav-link " href="09_dashboard_change.html">09 准备并执行 Change 3</a>
+<a class="nav-link " href="10_qr_change.html">10 准备并执行 Change 4</a>
+<a class="nav-link active" href="11_reflection_and_transfer.html">11 最终收口并复盘迁移这套工作流</a></nav>
+    </aside>
+    <main class="content">
+      <header class="page-header">
+        <h1>11. 最终收口并复盘迁移这套工作流</h1>
+        <div class="source-label">Source: guide/11_reflection_and_transfer.md</div>
+        <nav class="page-links"><a href="10_qr_change.html">上一页：10 准备并执行 Change 4</a></nav>
+      </header>
+      <article class="markdown-body">
+<h2 id="预计用时">预计用时</h2>
+<p>45-60 分钟。</p>
+<h2 id="本节位置">本节位置</h2>
+<p>这是进阶路线的收尾课。上一节已经完成 <code>configure-qr-base-url</code> 的实现、no-visible evidence 和验证报告；本节先把四个已执行 change 做归档前验证、OpenSpec validate、Superpowers finishing 和 archive，然后再把经验整理成自己的工作流手册。</p>
+<p>本课程最终不是为了记住四个具体改动，而是为了学会：在真实代码库里如何先建安全网、修小 bug、做可见优化、做不可见硬化，并且让每一步都有证据。</p>
+<h2 id="工具使用规则">工具使用规则</h2>
+<ul>
+<li>终端用于查看 artifacts、运行 <code>openspec validate</code>、执行 <code>openspec archive</code>、确认 archived 路径。</li>
+<li><code>Claude Code CLI</code> 用于辅助判断是否可以归档、运行 Superpowers finishing、整理结构和辅助复盘。</li>
+<li><code>verify</code> 是课程里的收尾判断；<code>openspec validate</code> 才是 OpenSpec CLI 命令。</li>
+<li>不要在本节加入新功能，不要为了 archive 临时扩大 scope。</li>
+</ul>
+<h2 id="学习目标">学习目标</h2>
+<ul>
+<li>区分测试通过、归档前验证、OpenSpec validate 和 archive。</li>
+<li>按顺序收口四个已执行 change，让规格历史可追踪。</li>
+<li>复盘真实项目优化中发生了什么。</li>
+<li>讲清 OpenSpec、Superpowers、TDD、Review 和 Archive 的关系。</li>
+<li>写出可复用的 AI 编程工作流。</li>
+<li>能用 evidence 表解释哪些 change 是 visible change、no visible change，哪些课程阶段只是 artifact-only preparation。</li>
+<li>能说明不可见变化如何被测试和验证证明。</li>
+</ul>
+<h2 id="收口概念边界">收口概念边界</h2>
+<p>本节会同时出现 <code>Review</code>、<code>verify</code>、<code>openspec validate</code> 和 <code>archive</code>，它们不是同一件事：</p>
+<table>
+<thead>
+<tr>
+  <th>概念</th>
+  <th>问的问题</th>
+  <th>主要证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>Review</code></td>
+  <td>这次改动是否符合 OpenSpec、plan、diff 和代码质量要求？有没有越界？</td>
+  <td>Claude review 总结、<code>git diff</code>、allowed files、测试覆盖说明</td>
+</tr>
+<tr>
+  <td><code>verify</code></td>
+  <td>测试、网页 evidence、verification docs 是否证明 change 完成？</td>
+  <td>pytest 输出、webpage evidence、verification report</td>
+</tr>
+<tr>
+  <td><code>openspec validate</code></td>
+  <td>OpenSpec artifacts 的格式和结构是否通过 CLI 校验？</td>
+  <td><code>openspec validate &lt;name&gt; --strict</code> 输出</td>
+</tr>
+<tr>
+  <td><code>archive</code></td>
+  <td>已完成并验证的 change 是否可以收进长期规格历史？</td>
+  <td>archive 命令输出、archived 路径、更新后的 <code>openspec/specs/</code></td>
+</tr>
+</tbody>
+</table>
+<p>简单记法：<code>Review</code> 先判断“改得对不对、有没有越界”，<code>verify</code> 再证明“完成没有”，<code>openspec validate</code> 检查规格文件本身，<code>archive</code> 才是把完成的 change 收进历史。</p>
+<h2 id="本节产出物">本节产出物</h2>
+<ul>
+<li>四个 change 的归档前验证结果，或清楚记录的阻塞原因</li>
+<li>四个 change 的 OpenSpec validate 结果，或清楚记录的阻塞原因</li>
+<li>四个 change 的 archive 结果和 archived 路径，或清楚记录的阻塞原因</li>
+<li><code>notes/final-playbook.md</code></li>
+</ul>
+<h2 id="操作步骤">操作步骤</h2>
+<h3 id="第-1-步-收集最终收口证据">第 1 步：收集最终收口证据</h3>
+<p>在终端执行：</p>
+<pre><code class="language-bash">cd learn_vibe_adv/overclocked-helpdesk-lab
+find openspec -maxdepth 5 -type f | sort | sed -n '1,200p'
+find docs/superpowers -maxdepth 4 -type f | sort
+find docs/verification -maxdepth 2 -type f | sort
+cd ..
+find notes -maxdepth 1 -name 'webpage-change-evidence-*.md' -type f | sort
+</code></pre>
+<p>确认至少能看到四类证据：</p>
+<ul>
+<li>OpenSpec change artifacts；</li>
+<li>Superpowers design docs 和 plans；</li>
+<li><code>docs/verification/</code> 下的验证报告；</li>
+<li><code>notes/</code> 下的 webpage evidence。</li>
+</ul>
+<p>如果某个 change 的证据缺失，不要进入 archive；先回到对应章节补齐或记录阻塞。</p>
+<h3 id="第-2-步-验证四个-scope-是否可以归档">第 2 步：验证四个 scope 是否可以归档</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请按顺序检查这些已执行 scope 是否可以归档。
+
+注意：
+- verify 是收尾判断，不是 openspec CLI 命令；
+- OpenSpec CLI 命令应使用 openspec validate
+
+要求：
+1. 如果 quality-baseline 仍未归档，先检查它；
+2. 如果 stabilize-slack-notification-config 仍未归档，再检查它；
+3. 如果 optimize-dashboard-readability 仍未归档，再检查它；
+4. 最后检查 configure-qr-base-url；
+5. 每个 scope 都要确认测试、evidence、verification report 和 OpenSpec 验收标准；
+6. 每个 scope 都要运行对应的 openspec validate &lt;name&gt; --strict；
+7. 如果失败，只修复与当前 scope 直接相关的问题；
+8. 不加入新需求。
+</code></pre>
+<p>如果你本地某个目录名和课程默认名不同，先用真实目录名。可以用下面命令确认：</p>
+<pre><code class="language-bash">find openspec/changes -maxdepth 2 -type d | sort
+</code></pre>
+<p>回到终端执行：</p>
+<pre><code class="language-bash">openspec validate quality-baseline --strict
+openspec validate stabilize-slack-notification-config --strict
+openspec validate optimize-dashboard-readability --strict
+openspec validate configure-qr-base-url --strict
+</code></pre>
+<p>也可以在逐个检查后再运行一次总检查：</p>
+<pre><code class="language-bash">openspec validate --all --strict
+</code></pre>
+<h3 id="第-3-步-运行-superpowers-finishing">第 3 步：运行 Superpowers finishing</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请使用 Superpowers finishing-a-development-branch 检查当前收尾状态。
+
+要求：
+1. 对照四个 scope 的 OpenSpec artifacts、Superpowers plans、测试结果、verification docs 和 webpage evidence；
+2. 检查是否有计划外改动；
+3. 输出每个 scope 是否可以归档；
+4. 如果不能归档，说明具体阻塞和应该回到哪个文件处理；
+5. 不创建 PR，不推送远程。
+</code></pre>
+<p>只有在 Step 2 的 <code>openspec validate</code> 和本步 finishing 都没有阻塞后，才进入 archive。</p>
+<h3 id="第-4-步-按顺序-archive-四个-change">第 4 步：按顺序 archive 四个 change</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请按顺序归档已验证通过的 OpenSpec change。
+
+要求：
+1. 如果 quality-baseline 仍未归档，先归档它；
+2. 如果 stabilize-slack-notification-config 仍未归档，再归档它；
+3. 如果 optimize-dashboard-readability 仍未归档，再归档它；
+4. 最后归档 configure-qr-base-url；
+5. 每次都使用本地 OpenSpec archive 命令；
+6. 贴出归档结果；
+7. 确认 archived change 路径；
+8. 不删除验证报告；
+9. 不使用 --no-validate；openspec archive 默认会做 validation。
+</code></pre>
+<p>如果你选择手动执行 archive，使用真实目录名：</p>
+<pre><code class="language-bash">openspec archive quality-baseline
+openspec archive stabilize-slack-notification-config
+openspec archive optimize-dashboard-readability
+openspec archive configure-qr-base-url
+</code></pre>
+<h3 id="第-5-步-确认-archived-路径">第 5 步：确认 archived 路径</h3>
+<p>归档后在终端执行：</p>
+<pre><code class="language-bash">find openspec -maxdepth 5 -type f | sort | sed -n '1,240p'
+find docs/verification -maxdepth 2 -type f | sort
+git status --short
+</code></pre>
+<p>你要能说明：</p>
+<ul>
+<li>哪些 change 已经进入 archive；</li>
+<li>长期 <code>openspec/specs/</code> 是否被更新；</li>
+<li>验证报告和 webpage evidence 是否仍然保留；</li>
+<li>是否还有未处理的阻塞。</li>
+</ul>
+<h3 id="第-6-步-让-claude-code-提问-而不是代写">第 6 步：让 Claude Code 提问，而不是代写</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请不要替我写最终复盘。
+
+请根据当前 OpenSpec、Superpowers plan、verification docs、webpage evidence、archive 结果和 git diff，问我 8 个复盘问题：
+1. 这个项目原本是什么；
+2. 我们做了哪四个 change；
+3. OpenSpec 在每个 change 里解决什么问题；
+4. Superpowers 在每个 change 里解决什么问题；
+5. TDD 捕捉到了什么风险；
+6. 哪个 change 是 visible change，它的 before / after 证据是什么；
+7. 哪些 change 是 no visible change，我怎样证明它们真的有效；
+8. 下次迁移到新项目时，我会保留和调整什么。
+
+每个问题后给一个简短参考答案，方便我对照。
+</code></pre>
+<h3 id="第-7-步-写最终-playbook">第 7 步：写最终 playbook</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请根据我的回答创建 ../notes/final-playbook.md。
+
+要求：
+1. 使用我的表达，不要写成正式论文；
+2. 包含项目背景、四个 change、OpenSpec 作用、Superpowers 作用、TDD 收获、Review 收获、网页 evidence 收获、不可见变化如何被证明、validate/archive 收口、可迁移流程；
+3. `Review 收获` 必须写具体例子，例如：review 抓住了 scope creep、bad diff、缺失测试、subagent 越界输出，或确认某个 diff 可以进入 verify；
+4. 如果我的回答不清楚，请先问我，不要编造；
+5. 最后给一张“下次做真实项目优化”的检查清单。
+</code></pre>
+<h3 id="第-8-步-自己删掉不能解释的话">第 8 步：自己删掉不能解释的话</h3>
+<p>在终端执行：</p>
+<pre><code class="language-bash">cd learn_vibe_adv
+cat notes/final-playbook.md
+</code></pre>
+<p>逐句检查。凡是你不能向别人解释的句子，都删掉或改成自己的话。</p>
+<h2 id="参考-playbook-结构">参考 playbook 结构</h2>
+<pre><code class="language-markdown"># 我的 OpenSpec + Superpowers 真实项目优化手册
+
+## 我优化的项目
+
+## 四个 change
+
+1. quality-baseline：为什么是 no visible change
+2. stabilize-slack-notification-config：为什么是 no visible change
+3. optimize-dashboard-readability：为什么是 visible change
+4. configure-qr-base-url：为什么是 no visible change
+
+## OpenSpec 帮我避免了什么
+
+## Superpowers 帮我避免了什么
+
+## TDD 让我先发现了什么
+
+## Review 让我改掉了什么
+
+写具体例子：scope creep、bad diff、缺失测试、subagent 越界输出，或 review 后确认可以进入 verify 的证据。
+
+## 网页 before / after 让我看清了什么
+
+## 不可见变化我是怎样证明的
+
+## validate / archive 收口我是怎样做的
+
+## 下次迁移到新项目的流程
+
+1. 先读 README 和目录结构
+2. 记录 baseline
+3. 初始化 OpenSpec
+4. 每次只创建一个 change
+5. 用 Superpowers 深化设计
+6. 用 writing-plans 写 TDD 计划
+7. 先测试失败，再最小实现
+8. 记录 visible / no visible / artifact-only preparation evidence
+9. 归档前验证：检查测试、evidence、verification docs 和 OpenSpec 验收标准
+10. 运行 openspec validate
+11. finishing 没有阻塞后再 archive
+</code></pre>
+<h2 id="验收标准">验收标准</h2>
+<p>运行或检查：</p>
+<pre><code class="language-bash">cat notes/final-playbook.md
+</code></pre>
+<p>文档必须能回答：项目是什么、改了什么、怎么验证、哪些变化能在网页看到、哪些变化只能由测试或 artifacts 证明、这套工作流如何迁移。</p>
+<p>通过标准：</p>
+<ul>
+<li>四个已执行 scope 都完成归档前验证，并且对应 OpenSpec validate 通过；否则阻塞被清楚记录。</li>
+<li>四个已执行 change 都已 archive，或者阻塞被清楚记录。</li>
+<li>你能用自己的话讲清完整流程。</li>
+<li>最终 playbook 不是 Claude 的口号，而是你的操作经验。</li>
+<li>playbook 能解释四个 change 的动机、验收方式和迁移方法。</li>
+<li>playbook 能解释 dashboard 为什么是 <code>visible change</code>。</li>
+<li>playbook 能解释质量基线、Slack bugfix、QR 配置为什么是 <code>no visible change</code>，以及准备课为什么只是 <code>artifact-only preparation</code>。</li>
+<li>playbook 能解释 testing、归档前验证、OpenSpec validate 和 archive 的区别。</li>
+</ul>
+<p>需要停下处理：</p>
+<ul>
+<li>如果归档前验证或 openspec validate 失败，不要 archive，先修复当前 change。</li>
+<li>如果 archive 前又想加新功能，停止，把新想法放到下一轮 change。</li>
+<li>如果只写“OpenSpec 很重要，Superpowers 很好用”，回到 artifacts，补具体例子。</li>
+<li>如果只写“页面没变”，但没有说明测试或配置验证证明了什么，回到 evidence 表补记录。</li>
+</ul>
+<h2 id="常见卡点">常见卡点</h2>
+<ul>
+<li>复盘只写结果，不写过程证据。</li>
+<li>把测试、verify、review、validate、archive 混成一件事。</li>
+<li>不敢写失败和阻塞，导致 playbook 不真实。</li>
+<li>只写“页面有变化 / 没变化”，没有解释它对应哪个 OpenSpec 验收标准。</li>
+</ul>
+
+      </article>
+      <footer class="footer">Created by Walter and Codex at 2026-06-11 23:37.</footer>
+    </main>
+  </div>
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

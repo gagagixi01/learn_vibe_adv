@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>10. 准备并执行 Change 4：QR base URL 配置硬编码</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <button class="menu-button" type="button" aria-controls="sidebar" aria-expanded="false">目录</button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">Vibe Coding Adv Reader</div>
+      <nav><a class="nav-link nav-home" href="../index.html">课程首页</a>
+<div class="nav-section">阅读入口</div>
+<a class="nav-link " href="../article.html">长文导读</a>
+<a class="nav-link " href="README.html">课程 README</a>
+<div class="nav-section">分节指南</div>
+<a class="nav-link " href="00_overview.html">00 从做小项目到优化真实项目</a>
+<a class="nav-link " href="01_repo_selection_and_workflow.html">01 选择真实项目，并看懂双工具工作流</a>
+<a class="nav-link " href="02_git_basics.html">02 先学会本地 Git，再开始真实项目</a>
+<a class="nav-link " href="03_clone_and_baseline.html">03 远程 GitHub、克隆项目并记录基线</a>
+<a class="nav-link " href="04_openspec_proposal.html">04 创建 Change 1 OpenSpec</a>
+<a class="nav-link " href="05_superpowers_brainstorm.html">05 用 Superpowers 深化设计，但不替代 OpenSpec</a>
+<a class="nav-link " href="06_superpowers_write_plan.html">06 用 Superpowers 写可执行 TDD 计划</a>
+<a class="nav-link " href="07_tdd_subagent_execution.html">07 用 TDD + subagent 执行 Change 1</a>
+<a class="nav-link " href="08_slack_notification_bugfix.html">08 执行 Change 2</a>
+<a class="nav-link " href="09_dashboard_change.html">09 准备并执行 Change 3</a>
+<a class="nav-link active" href="10_qr_change.html">10 准备并执行 Change 4</a>
+<a class="nav-link " href="11_reflection_and_transfer.html">11 最终收口并复盘迁移这套工作流</a></nav>
+    </aside>
+    <main class="content">
+      <header class="page-header">
+        <h1>10. 准备并执行 Change 4：QR base URL 配置硬编码</h1>
+        <div class="source-label">Source: guide/10_qr_change.md</div>
+        <nav class="page-links"><a href="09_dashboard_change.html">上一页：09 准备并执行 Change 3</a>
+<a href="11_reflection_and_transfer.html">下一页：11 最终收口并复盘迁移这套工作流</a></nav>
+      </header>
+      <article class="markdown-body">
+<h2 id="预计用时">预计用时</h2>
+<p>60-90 分钟。</p>
+<h2 id="本节位置">本节位置</h2>
+<p>上一节已经在 <code>09</code> 里完成了第一个 <code>visible change</code>：dashboard 可见优化。本节切换到第四个 change：<code>configure-qr-base-url</code>。</p>
+<p>这个 change 用来练习另一种真实优化：用户默认看不出页面变化，但后台配置能力变稳。当前 lab 的 <code>overclocked_helpdesk/utils/qr.py</code> 把 QR 目标地址硬编码为 <code>http://127.0.0.1:8000/team-status?team=&lt;id&gt;</code>。本节只负责把 Change 4 本身走完：先准备，再实现，再做 QR 专项验证和验证报告。四个 change 的最终 validate / archive 收口放到 <code>11</code>。</p>
+<p>Change 4 最终应归类为 <code>no visible change</code>。学生要同时证明两件事：默认页面外观没有计划外变化，测试和 verification 记录又能证明 QR 目标 URL 已从硬编码变成可配置。</p>
+<h2 id="工具使用规则">工具使用规则</h2>
+<ul>
+<li>终端用于检查当前代码、查看 <code>openspec/</code> 和 <code>docs/superpowers/</code> 路径、运行测试、启动服务、记录 before / after。</li>
+<li><code>Claude Code CLI</code> 用于创建 OpenSpec change、触发 Superpowers brainstorming、生成 writing plan、按真实 plan 执行 Change 4，并整理 QR change 验证报告。</li>
+<li>本节先做准备，再做实现；不要在还没补齐 artifacts 和真实 plan 路径前直接改代码。</li>
+<li>本节不顺手重做 QR UI，不修改 dashboard change，不加入新需求。</li>
+</ul>
+<h2 id="学习目标">学习目标</h2>
+<ul>
+<li>把“硬编码本地 URL”识别成独立配置 hardening change。</li>
+<li>学会规划并执行一个默认页面不变、但后台行为可测试的 no-visible change。</li>
+<li>在 plan 里明确先写测试，再改配置和 QR 工具函数。</li>
+<li>用 no-visible Before / After evidence 证明页面没有计划外变化。</li>
+<li>完成 QR change 的测试、evidence 和验证报告，为下一节最终收口准备证据。</li>
+</ul>
+<h2 id="本节产出物">本节产出物</h2>
+<ul>
+<li><code>openspec/changes/configure-qr-base-url/</code>：本节创建</li>
+<li>Change 4 的 OpenSpec <code>proposal.md</code>、<code>design.md</code>、<code>specs/.../spec.md</code>、<code>tasks.md</code>：本节创建</li>
+<li><code>docs/superpowers/specs/</code> 下的 Change 4 design doc，真实路径以 <code>find</code> 输出为准，本节创建</li>
+<li><code>docs/superpowers/plans/</code> 下的 Change 4 plan，真实路径以 <code>find</code> 输出为准，本节创建</li>
+<li>Change 4 的测试和最小实现结果</li>
+<li><code>notes/webpage-change-evidence-configure-qr-base-url.md</code></li>
+<li><code>docs/verification/YYYY-MM-DD-configure-qr-base-url.md</code></li>
+<li>QR change 的完成状态，或清楚记录的阻塞原因</li>
+</ul>
+<h2 id="操作步骤">操作步骤</h2>
+<h3 id="第-1-步-确认-qr-风险来自当前代码">第 1 步：确认 QR 风险来自当前代码</h3>
+<p>在终端执行：</p>
+<pre><code class="language-bash">cd learn_vibe_adv/overclocked-helpdesk-lab
+git status --short
+sed -n '1,120p' overclocked_helpdesk/utils/qr.py
+sed -n '1,120p' overclocked_helpdesk/config.py
+rg -n &quot;127.0.0.1|team-status|generate_team_qr|APP_BASE_URL&quot; overclocked_helpdesk tests
+</code></pre>
+<p>你应该能看到：</p>
+<ul>
+<li><code>generate_team_qr()</code> 里硬编码了 <code>http://127.0.0.1:8000</code>。</li>
+<li><code>Settings</code> 里还没有 <code>APP_BASE_URL</code>。</li>
+<li>Admin 页面按钮和 QR API 可以保持现有 response shape，不需要视觉改版。</li>
+</ul>
+<p>本步只确认问题，不修改代码。</p>
+<h3 id="第-2-步-创建-change-4-openspec-proposal">第 2 步：创建 Change 4 OpenSpec proposal</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">/opsx:propose &quot;让 OverClocked Helpdesk 的 QR 码目标地址使用可配置 base URL。
+
+Change 名称建议：configure-qr-base-url。
+
+背景：
+当前 overclocked_helpdesk/utils/qr.py 把 QR 码目标地址硬编码为 http://127.0.0.1:8000/team-status?team=&lt;id&gt;。
+这在本地开发可用，但迁移到真实活动域名时会生成错误 QR。
+
+目标：
+1. 在 settings 中增加 APP_BASE_URL，默认值保持 http://127.0.0.1:8000；
+2. generate_team_qr(team_id) 使用 APP_BASE_URL 生成 team-status URL；
+3. base URL 末尾是否带 / 都不应生成双斜杠；
+4. 现有 admin QR 生成按钮、静态文件路径和 API response shape 保持不变；
+5. 默认配置下页面外观不应变化。
+
+验收：
+- 有测试证明默认 APP_BASE_URL 会生成 http://127.0.0.1:8000/team-status?team=&lt;id&gt;；
+- 有测试证明自定义 APP_BASE_URL 会进入 QR 内容；
+- 有测试证明末尾带 / 的 base URL 不会生成双斜杠；
+- 有回归检查证明 admin 页面默认外观无明显变化；
+- 不重做 QR UI，不改团队状态页面，不加入部署系统。&quot;
+</code></pre>
+<h3 id="第-3-步-检查-openspec-artifacts">第 3 步：检查 OpenSpec artifacts</h3>
+<p>在终端执行：</p>
+<pre><code class="language-bash">openspec status --change configure-qr-base-url --json
+openspec status --change configure-qr-base-url
+find openspec/changes/configure-qr-base-url -maxdepth 4 -type f | sort
+</code></pre>
+<h3 id="第-4-步-用-superpowers-深化-no-visible-设计">第 4 步：用 Superpowers 深化 no-visible 设计</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请基于 configure-qr-base-url 的 OpenSpec artifacts 使用 Superpowers brainstorming。
+
+要求：
+1. OpenSpec 是需求事实源；
+2. 只深化配置字段、默认值、URL 拼接规则、测试策略和 no-visible evidence；
+3. 推荐测试方式优先捕获 QRCode.add_data 的 URL，不要求解码 PNG；
+4. 输出 design doc 到 docs/superpowers/specs/，并在完成后告诉我实际文件路径；
+5. 不重做 QR 页面，不改团队状态页面，不改部署系统，不改业务代码。
+</code></pre>
+<p>回到终端执行：</p>
+<pre><code class="language-bash">find docs/superpowers/specs -type f | sort
+</code></pre>
+<p>记录 QR config design doc 的真实路径。</p>
+<h3 id="第-5-步-生成-change-4-实施计划">第 5 步：生成 Change 4 实施计划</h3>
+<p>先在终端记录当前 <code>base-ref</code>：</p>
+<pre><code class="language-bash">git rev-parse HEAD
+</code></pre>
+<p>然后在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请使用 Superpowers writing-plans，为 configure-qr-base-url 创建实施计划。
+
+输入：
+- OpenSpec change: openspec/changes/configure-qr-base-url/
+- Design Doc: &lt;paste the actual QR config design doc path from Step 4&gt;
+- base-ref: &lt;paste the real git rev-parse HEAD output&gt;
+
+要求：
+1. plan 放到 docs/superpowers/plans/，并在完成后告诉我实际文件路径；
+2. 第一项实现任务必须先写失败测试；
+3. 测试默认 APP_BASE_URL；
+4. 测试自定义 APP_BASE_URL；
+5. 测试末尾斜杠不会生成双斜杠；
+6. 推荐通过 monkeypatch/capture QRCode.add_data 参数验证 URL，不要求解码 PNG；
+7. 最小实现只改 settings 和 QR URL 构造；
+8. 保持 admin QR response shape 和页面外观不变。
+</code></pre>
+<p>回到终端执行：</p>
+<pre><code class="language-bash">find docs/superpowers/plans -type f | sort
+</code></pre>
+<p>记录 QR config plan 的真实路径。后面的执行和收尾都必须复用这条真实路径。</p>
+<h3 id="第-6-步-确认真实-plan-路径并记录-no-visible-before">第 6 步：确认真实 plan 路径并记录 no-visible Before</h3>
+<p>在终端执行：</p>
+<pre><code class="language-bash">cd learn_vibe_adv/overclocked-helpdesk-lab
+git status --short
+find docs/superpowers/plans -type f | sort
+find docs/superpowers/specs -type f | sort
+</code></pre>
+<p>找到并记录 <code>configure-qr-base-url</code> 的真实 design doc 路径和 plan 路径。</p>
+<p>然后在终端执行：</p>
+<pre><code class="language-bash">cd learn_vibe_adv
+cp notes/webpage-change-evidence.md notes/webpage-change-evidence-configure-qr-base-url.md
+cd overclocked-helpdesk-lab
+source .venv/bin/activate
+python scripts/seed_data.py
+uvicorn overclocked_helpdesk.main:app --reload
+</code></pre>
+<p>在浏览器记录 Before：</p>
+<ul>
+<li><code>http://127.0.0.1:8000/admin</code></li>
+<li><code>http://127.0.0.1:8000/team-status?team=1</code></li>
+</ul>
+<p>把 <code>本轮预期变化</code> 写成：</p>
+<pre><code class="language-text">configure-qr-base-url 是 no visible change。默认配置下页面外观不应明显变化；证据主要来自 QR URL 构造测试和 admin 页面回归检查。
+</code></pre>
+<h3 id="第-7-步-按-plan-执行-change-4">第 7 步：按 plan 执行 Change 4</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请阅读 configure-qr-base-url 的 OpenSpec artifacts 和我刚记录的 Superpowers plan 真实路径。
+
+输入：
+- OpenSpec change: openspec/changes/configure-qr-base-url/
+- Superpowers plan: &lt;paste the actual QR config plan path&gt;
+
+先不要实现。请先回答：
+1. 本 change 为什么是 no visible change；
+2. 哪些测试必须先失败；
+3. 哪些文件预计会被修改；
+4. 哪些 response shape 或页面外观必须保持不变；
+5. 哪些范围明确不做。
+</code></pre>
+<p>然后继续在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请按真实 plan 执行 configure-qr-base-url，直到整个 change 完成或出现明确阻塞。
+
+要求：
+1. 只执行 configure-qr-base-url；
+2. 先写失败测试，再做最小实现；
+3. 覆盖默认 APP_BASE_URL、自定义 APP_BASE_URL、末尾斜杠三种情况；
+4. 推荐通过 monkeypatch/capture QRCode.add_data 参数验证 URL；
+5. 保持 admin QR response shape 和默认页面外观不变；
+6. 每个任务完成后都做三层 Review checkpoint：
+   - scope/spec review：是否符合 configure-qr-base-url 的 OpenSpec 验收标准和真实 plan；
+   - diff/code review：`git diff` 是否只改配置、QR URL 构造和相关测试，是否没有 QR UI 或部署系统改动；
+   - completion review：测试、no-visible evidence 和验证报告还缺什么；
+7. 每一步都贴出运行命令、结果和 review 结论；
+8. 不执行计划外功能。
+</code></pre>
+<h3 id="第-8-步-终端独立验证-change-4">第 8 步：终端独立验证 Change 4</h3>
+<p>回到终端执行：</p>
+<pre><code class="language-bash">cd learn_vibe_adv/overclocked-helpdesk-lab
+source .venv/bin/activate
+python -m pytest tests/ -q
+python -m pytest tests/ -q -k &quot;qr or config&quot;
+git status --short
+</code></pre>
+<p>如果 <code>-k &quot;qr or config&quot;</code> 没有匹配测试，改用 Claude plan 里记录的真实 QR 测试文件路径运行，例如：</p>
+<pre><code class="language-bash">python -m pytest tests/test_qr_config.py -q
+</code></pre>
+<h3 id="第-9-步-记录-no-visible-after">第 9 步：记录 no-visible After</h3>
+<p>如果服务已经停止，重新启动：</p>
+<pre><code class="language-bash">source .venv/bin/activate
+uvicorn overclocked_helpdesk.main:app --reload
+</code></pre>
+<p>重新打开：</p>
+<ul>
+<li><code>http://127.0.0.1:8000/admin</code></li>
+<li><code>http://127.0.0.1:8000/team-status?team=1</code></li>
+</ul>
+<p>更新：</p>
+<pre><code class="language-text">../notes/webpage-change-evidence-configure-qr-base-url.md
+</code></pre>
+<p>After 观察至少写清：</p>
+<ul>
+<li>默认 admin 页面外观是否与 Before 一致；</li>
+<li>team status 页面是否仍可打开；</li>
+<li>QR URL 构造由哪些测试证明；</li>
+<li>分类写 <code>no visible change</code>。</li>
+</ul>
+<h3 id="第-10-步-写-change-4-验证报告">第 10 步：写 Change 4 验证报告</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请创建或更新 docs/verification/YYYY-MM-DD-configure-qr-base-url.md。
+
+要求：
+1. 记录自动化测试命令和结果；
+2. 记录 Review checkpoint 结论：scope/spec review、diff/code review、completion review 是否通过；
+3. 记录默认页面 no-visible 验证步骤和结果；
+4. 标注每条 OpenSpec 验收标准是否通过；
+5. 引用 ../notes/webpage-change-evidence-configure-qr-base-url.md；
+6. 如果失败，写清原因和下一步；
+7. 不修改业务代码。
+</code></pre>
+<h2 id="验收标准">验收标准</h2>
+<p>在终端运行或检查：</p>
+<pre><code class="language-bash">cd learn_vibe_adv/overclocked-helpdesk-lab
+find docs/verification -type f | sort
+find openspec -maxdepth 5 -type f | sort | sed -n '1,200p'
+cd ..
+find notes -maxdepth 1 -name 'webpage-change-evidence-*.md' -type f | sort
+git status --short
+</code></pre>
+<p>通过标准：</p>
+<ul>
+<li><code>configure-qr-base-url</code> OpenSpec change 已在本节创建。</li>
+<li>OpenSpec artifacts 已在本节补齐。</li>
+<li>Superpowers design doc 和 plan 已在本节生成并记录真实路径。</li>
+<li>Change 4 已执行完成，或阻塞原因被清楚记录。</li>
+<li><code>notes/webpage-change-evidence-configure-qr-base-url.md</code> 证明默认页面无明显变化。</li>
+<li>自动化测试通过，或失败原因被清楚记录。</li>
+<li><code>docs/verification/YYYY-MM-DD-configure-qr-base-url.md</code> 已记录测试、no-visible evidence 和 OpenSpec 验收标准。</li>
+<li>你能说明为什么“没有页面变化”仍然可以是有效优化。</li>
+</ul>
+<p>需要停下处理：</p>
+<ul>
+<li>如果 Claude 开始改 QR 生成代码，停止，回到本节 artifact checkpoint。</li>
+<li>如果 proposal 扩成部署系统、二维码管理后台或 UI redesign，回到 OpenSpec 收缩范围。</li>
+<li>如果还没记录真实 plan 路径，不要进入实现阶段。</li>
+<li>如果当前 Change 4 还没完成，不要进入 <code>11</code> 的最终 validate / archive 收口。</li>
+<li>如果 evidence 只写“页面看起来可以”，但没有说明测试证明了什么，先补证据再进入 <code>11</code> 的最终收口。</li>
+</ul>
+<h2 id="常见卡点">常见卡点</h2>
+<ul>
+<li>以为 no-visible change 不需要测试。</li>
+<li>试图通过肉眼看 PNG 证明 URL 正确。</li>
+<li>把配置 hardening 扩成完整部署配置系统。</li>
+<li>以为 no-visible change 可以跳过 before / after。</li>
+<li>只看 admin 页面，不验证 QR 内容。</li>
+<li>把“测试通过”和“QR change 已经有验证报告”当成同一个概念。</li>
+</ul>
+
+      </article>
+      <footer class="footer">Created by Walter and Codex at 2026-06-11 23:37.</footer>
+    </main>
+  </div>
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

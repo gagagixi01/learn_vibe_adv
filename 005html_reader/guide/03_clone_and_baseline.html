@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>03. 远程 GitHub、克隆项目并记录基线</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <button class="menu-button" type="button" aria-controls="sidebar" aria-expanded="false">目录</button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">Vibe Coding Adv Reader</div>
+      <nav><a class="nav-link nav-home" href="../index.html">课程首页</a>
+<div class="nav-section">阅读入口</div>
+<a class="nav-link " href="../article.html">长文导读</a>
+<a class="nav-link " href="README.html">课程 README</a>
+<div class="nav-section">分节指南</div>
+<a class="nav-link " href="00_overview.html">00 从做小项目到优化真实项目</a>
+<a class="nav-link " href="01_repo_selection_and_workflow.html">01 选择真实项目，并看懂双工具工作流</a>
+<a class="nav-link " href="02_git_basics.html">02 先学会本地 Git，再开始真实项目</a>
+<a class="nav-link active" href="03_clone_and_baseline.html">03 远程 GitHub、克隆项目并记录基线</a>
+<a class="nav-link " href="04_openspec_proposal.html">04 创建 Change 1 OpenSpec</a>
+<a class="nav-link " href="05_superpowers_brainstorm.html">05 用 Superpowers 深化设计，但不替代 OpenSpec</a>
+<a class="nav-link " href="06_superpowers_write_plan.html">06 用 Superpowers 写可执行 TDD 计划</a>
+<a class="nav-link " href="07_tdd_subagent_execution.html">07 用 TDD + subagent 执行 Change 1</a>
+<a class="nav-link " href="08_slack_notification_bugfix.html">08 执行 Change 2</a>
+<a class="nav-link " href="09_dashboard_change.html">09 准备并执行 Change 3</a>
+<a class="nav-link " href="10_qr_change.html">10 准备并执行 Change 4</a>
+<a class="nav-link " href="11_reflection_and_transfer.html">11 最终收口并复盘迁移这套工作流</a></nav>
+    </aside>
+    <main class="content">
+      <header class="page-header">
+        <h1>03. 远程 GitHub、克隆项目并记录基线</h1>
+        <div class="source-label">Source: guide/03_clone_and_baseline.md</div>
+        <nav class="page-links"><a href="02_git_basics.html">上一页：02 先学会本地 Git，再开始真实项目</a>
+<a href="04_openspec_proposal.html">下一页：04 创建 Change 1 OpenSpec</a></nav>
+      </header>
+      <article class="markdown-body">
+<h2 id="预计用时">预计用时</h2>
+<p>40-60 分钟。</p>
+<h2 id="本节位置">本节位置</h2>
+<p>本节承接 <code>02</code> 的 Git 本地基础。默认前提是：你已经知道 Git 在本地怎么记录版本，也已经知道这门课为什么先做质量基线、为什么 <code>OpenSpec</code> 管 change 边界、<code>Superpowers</code> 管设计深化和执行纪律。</p>
+<p>本节开始把 Git 放到真实世界里：GitHub 作为远程仓库到底解决什么问题，为什么 <code>clone</code> 比下载 zip 更适合协作，然后再把真实项目跑起来并记录 baseline。还没有进入 change，也不开始优化。</p>
+<h2 id="工具使用规则">工具使用规则</h2>
+<ul>
+<li>终端负责真实执行：快速确认 <code>git</code>、克隆仓库、创建 <code>.venv</code>、安装依赖、启动服务、查看目录。</li>
+<li><code>Claude Code CLI</code> 只做只读协作：解释项目地图、帮助整理 baseline 笔记。</li>
+<li>本节不创建 OpenSpec change，不调用 Superpowers 实现代码，不修改克隆项目里的业务文件。</li>
+</ul>
+<p>下面出现的终端命令默认以 <strong>POSIX shell</strong> 为例（macOS / Linux / Git Bash）。如果你在 Windows PowerShell 中操作，先让 <code>Claude Code CLI</code> 把 <code>source</code>、<code>find</code>、<code>sed</code> 这类命令换成当前平台的等价写法，再继续本节。</p>
+<h2 id="学习目标">学习目标</h2>
+<ul>
+<li>理解 GitHub 作为远程仓库、云端副本和协作中转站的作用。</li>
+<li>理解 <code>clone</code> 和下载 zip 的区别。</li>
+<li>克隆 <code>OverClocked Helpdesk</code> 到 <code>learn_vibe_adv/overclocked-helpdesk-lab/</code>。</li>
+<li>能解释 <code>origin</code>、<code>push</code>、<code>pull</code> 在概念上分别是什么。</li>
+<li>创建独立虚拟环境并安装依赖。</li>
+<li>能用角色和问题流转解释这个项目当前在解决什么问题。</li>
+<li>启动 FastAPI 应用并确认页面或阻塞状态。</li>
+<li>产出一份 baseline 笔记，作为后续所有 change 的起点。</li>
+</ul>
+<h2 id="本节产出物">本节产出物</h2>
+<ul>
+<li><code>learn_vibe_adv/overclocked-helpdesk-lab/</code></li>
+<li><code>learn_vibe_adv/notes/baseline.md</code></li>
+</ul>
+<h2 id="操作步骤">操作步骤</h2>
+<h3 id="第-0-步-快速确认-git-已可用">第 0 步：快速确认 Git 已可用</h3>
+<p><code>02</code> 已经负责 Git 的安装和本地练习。本节只做一个很短的 preflight：</p>
+<pre><code class="language-bash">git --version
+</code></pre>
+<p>如果这条命令失败，不要在本节继续安装 Git，直接回到 <code>02</code>。</p>
+<h3 id="第-1-步-先理解为什么这一节开始讲-remote-github">第 1 步：先理解为什么这一节开始讲 Remote GitHub</h3>
+<p>上一节讲的是本地 Git：你电脑上的工作区、暂存区和本地历史。</p>
+<p>这一节开始讲远程仓库，也就是 GitHub 这类平台在协作里扮演什么角色。你可以先把 GitHub 理解成三件事：</p>
+<ul>
+<li>代码的云端副本，避免“只存在一台电脑上”的单点风险；</li>
+<li>协作中转站，让别人能拿到同一份代码历史；</li>
+<li>本地 Git 和多人开发之间的连接点。</li>
+</ul>
+<p>这里先不用注册自己的 GitHub 仓库，也不用 push 当前课程代码。因为 <code>OverClocked Helpdesk</code> 是公开仓库，这一节的目标只是 <strong>从远程拿到代码并看懂它</strong>。</p>
+<h3 id="第-2-步-理解-clone-和下载-zip-的区别">第 2 步：理解 clone 和下载 zip 的区别</h3>
+<p>下载 zip 只会给你当前文件快照。</p>
+<p><code>git clone</code> 会给你：</p>
+<ul>
+<li>当前文件；</li>
+<li>完整 Git 历史；</li>
+<li>远程仓库地址；</li>
+<li>后续 <code>pull</code> / <code>push</code> 的协作入口。</li>
+</ul>
+<p>也就是说，zip 更像“拿一份静态拷贝”，<code>clone</code> 更像“拿一份完整仓库副本”。</p>
+<p>注意：<code>02</code> 里的 <code>worktree</code> 是给同一个本地仓库增加另一个工作目录；本节的 <code>clone</code> 是从 GitHub 远程仓库拿到一份新的本地仓库副本。</p>
+<h3 id="第-3-步-在终端克隆项目">第 3 步：在终端克隆项目</h3>
+<p>在终端执行：</p>
+<pre><code class="language-bash">cd learn_vibe_adv
+git clone https://github.com/gagagixi01/OverClocked-Helpdesk.git overclocked-helpdesk-lab
+cd overclocked-helpdesk-lab
+git status --short
+</code></pre>
+<p>预期：<code>git status --short</code> 没有输出，说明刚克隆的仓库是干净的。</p>
+<h3 id="第-4-步-看懂-origin-push-pull-但本节不要求你推送">第 4 步：看懂 origin、push、pull，但本节不要求你推送</h3>
+<p>在终端执行：</p>
+<pre><code class="language-bash">git remote -v
+</code></pre>
+<p>克隆完成后，你可以先把这几个词记成概念：</p>
+<ul>
+<li><code>origin</code>：这个仓库默认记住的远程地址昵称；</li>
+<li><code>pull</code>：把远程最新变化拉到本地；</li>
+<li><code>push</code>：把你本地的新提交送到远程。</li>
+</ul>
+<p>本节不要求你把课程练习仓库 push 到你自己的 GitHub。当前练习项目是公开仓库，你只需要 clone 下来并在本地分析、运行。</p>
+<p>如果你后面真的要和朋友协作，再去配置 GitHub 账号、SSH 或 token 都来得及。这里先知道：<strong>公开仓库 clone 不需要先完成 SSH 配置</strong>。</p>
+<h3 id="第-5-步-创建环境并安装依赖">第 5 步：创建环境并安装依赖</h3>
+<p>在终端执行：</p>
+<pre><code class="language-bash">python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+</code></pre>
+<p>如果安装失败，把完整命令和完整报错交给 <code>Claude Code CLI</code> 分析。不要只说“安装失败了”。</p>
+<h3 id="第-6-步-先建立项目的业务模型">第 6 步：先建立项目的业务模型</h3>
+<p><code>OverClocked Helpdesk</code> 不是抽象练习，而是一个面向黑客松或校园活动现场的帮助台系统。你在读代码前要先回答：谁提交问题，谁协调问题，谁处理问题。</p>
+<p>可以先用这张业务流程图建立 baseline 理解：</p>
+<pre><code class="language-mermaid">flowchart TD
+    A[&quot;团队 / 学生&quot;] --&gt;|&quot;提交问题&quot;| B[&quot;Helpdesk 系统&quot;]
+    B --&gt;|&quot;进入问题队列&quot;| C[&quot;管理员&quot;]
+    C --&gt;|&quot;分配或协调&quot;| D[&quot;导师&quot;]
+    D --&gt;|&quot;查看并响应&quot;| B
+    B --&gt;|&quot;更新状态 / 展示结果&quot;| A
+    C --&gt;|&quot;管理导师与问题&quot;| B
+</code></pre>
+<p>后面你在看 <code>api/</code>、<code>models/</code>、<code>services/</code>、<code>db/</code> 和 <code>templates/</code> 时，不要只记目录名，而要把它们映射回这条业务链路。</p>
+<h3 id="第-7-步-检查目录结构">第 7 步：检查目录结构</h3>
+<p>在终端执行：</p>
+<pre><code class="language-bash">find . -maxdepth 3 -type f | sort | sed -n '1,120p'
+</code></pre>
+<p>重点确认这些路径已经存在：</p>
+<ul>
+<li><code>overclocked_helpdesk/api/</code></li>
+<li><code>overclocked_helpdesk/models/</code></li>
+<li><code>overclocked_helpdesk/services/</code></li>
+<li><code>overclocked_helpdesk/db/</code></li>
+<li><code>templates/</code></li>
+<li><code>scripts/</code></li>
+</ul>
+<h3 id="第-8-步-启动服务">第 8 步：启动服务</h3>
+<p>在终端执行：</p>
+<pre><code class="language-bash">source .venv/bin/activate
+uvicorn overclocked_helpdesk.main:app --reload
+</code></pre>
+<p>如果启动后终端报错，不要只说“服务启动失败”。像第 5 步处理安装失败一样，把完整启动命令和完整报错交给 <code>Claude Code CLI</code> 分析。先让 Claude 只解释原因和给出下一条验证命令，不要直接修改业务代码。</p>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">我在启动 OverClocked Helpdesk 时遇到报错。
+
+启动命令：
+source .venv/bin/activate
+uvicorn overclocked_helpdesk.main:app --reload
+
+完整报错如下：
+&lt;paste full terminal output here&gt;
+
+请只做只读分析：
+1. 判断这是环境问题、依赖问题、端口占用、数据库/seed 问题，还是项目代码问题；
+2. 给我下一条应该在终端运行的验证命令；
+3. 不要修改文件，不要创建 OpenSpec change，不要开始修复代码；
+4. 如果当前无法启动，请帮我把阻塞原因整理成可以写进 ../notes/baseline.md 的文字。
+</code></pre>
+<p>如果 Claude 判断只是端口占用，可以先关闭占用端口的旧服务，或临时换端口启动并在 baseline 里记录实际端口。如果 Claude 判断是依赖或环境问题，先按它给出的验证命令确认原因，再决定是否回到第 5 步重装依赖。只有当启动阻塞被解释清楚并写进 baseline，才继续下一节。</p>
+<p>在浏览器打开项目启动后的本地文档页：</p>
+<pre><code class="language-text">http://127.0.0.1:8000/docs
+</code></pre>
+<h3 id="第-9-步-让-claude-code-解释项目地图">第 9 步：让 Claude Code 解释项目地图</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请只阅读当前 OverClocked Helpdesk 项目，不要修改文件。
+
+工程上下文：
+- 我正在做 pre-change baseline assessment，还没有在这个 checkout 里创建任何 OpenSpec change；
+- 下一步计划关注 `quality-baseline`，目标是识别现有 mentor assignment 和 query creation 行为的测试覆盖候选点；
+- 现在只需要从当前代码里识别候选位置，作为 pre-change baseline observations。
+
+请输出一份项目地图，包含：
+1. app 入口在哪里；
+2. api、models、services、db、templates 分别负责什么；
+3. 团队提交问题、导师查看问题、管理员查看问题的大致数据流；
+4. 基于当前代码，`quality-baseline` 最适合补测试的 3 个候选位置，并说明它们对应 mentor assignment、query creation 或启动/回归风险中的哪一类；
+5. 不要假设 `openspec/` 或 `docs/superpowers/` 已经存在；
+6. 不要写代码，不要创建测试，不要创建 baseline 笔记，不要创建 OpenSpec change；
+7. 如果有不确定的地方，请标注“待验证”，不要编造。
+</code></pre>
+<h3 id="第-10-步-写-baseline-笔记">第 10 步：写 baseline 笔记</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请根据刚才的项目地图，创建 ../notes/baseline.md。
+
+要求：
+1. 只创建或修改 ../notes/baseline.md；
+2. 不修改 overclocked_helpdesk/、templates/、scripts/ 下的代码；
+3. 包含启动命令、页面入口、关键目录、当前可观察行为、planned `quality-baseline` 测试候选点、已知风险；
+4. 明确写清这些测试候选点只是 pre-change baseline observations，不代表已经创建 OpenSpec change 或开始实现；
+5. 如果有不确定的地方，请标注“待验证”，不要编造。
+</code></pre>
+<h2 id="验收标准">验收标准</h2>
+<p>在终端运行或检查：</p>
+<pre><code class="language-bash">git --version
+cd learn_vibe_adv/overclocked-helpdesk-lab
+git remote -v
+git status --short
+cd ..
+cat notes/baseline.md
+</code></pre>
+<p>通过标准：</p>
+<ul>
+<li><code>git --version</code> 能成功运行；如果不能，你知道应该回到 <code>02</code>。</li>
+<li>你能解释为什么本节用 <code>clone</code>，而不是下载 zip。</li>
+<li>项目已经被克隆到 <code>learn_vibe_adv/overclocked-helpdesk-lab/</code>。</li>
+<li>你知道 <code>origin</code> 是远程仓库地址的昵称，也知道 <code>push</code> / <code>pull</code> 的概念区别。</li>
+<li>你能根据流程图讲清谁提交问题、谁协调问题、谁处理问题。</li>
+<li>项目能启动，或者启动阻塞被清楚记录。</li>
+<li><code>learn_vibe_adv/notes/baseline.md</code> 不只是列目录，也记录了启动命令、页面入口和当前行为。</li>
+<li>克隆项目里的业务代码没有被修改。</li>
+</ul>
+<p>需要停下处理：</p>
+<ul>
+<li>如果 <code>Claude</code> 已经开始改代码，先撤回这一步的越界修改，回到只读 baseline。</li>
+<li>如果你还不能解释项目当前在做什么，就不要进入 <code>04</code>。</li>
+</ul>
+<h2 id="常见卡点">常见卡点</h2>
+<ul>
+<li>以为“能打开 GitHub 网页”和“本机已经能用 Git clone”是同一件事。</li>
+<li>以为 zip 和 clone 没区别，结果后面看不到历史，也说不清远程来源。</li>
+<li>以为本节必须先配置自己的 GitHub 账号或 SSH，其实公开仓库 clone 不需要。</li>
+<li>直接跳进代码和目录，没有先建立“谁提交问题、谁协调、谁处理”的业务模型。</li>
+<li>把当前业务目的和 Future Scope 混在一起，以为认证、WebSocket、Analytics 已经是主流程。</li>
+<li>没有激活 <code>.venv</code> 就安装或启动。</li>
+<li>安装失败时只给 Claude 一句“报错了”。</li>
+<li>baseline 笔记写成感想，没有启动命令和可观察行为。</li>
+</ul>
+
+      </article>
+      <footer class="footer">Created by Walter and Codex at 2026-06-11 23:37.</footer>
+    </main>
+  </div>
+  <script src="../assets/reader.js"></script>
+</body>
+</html>

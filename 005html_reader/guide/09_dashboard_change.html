@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>09. 准备并执行 Change 3：dashboard 可见优化</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <button class="menu-button" type="button" aria-controls="sidebar" aria-expanded="false">目录</button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">Vibe Coding Adv Reader</div>
+      <nav><a class="nav-link nav-home" href="../index.html">课程首页</a>
+<div class="nav-section">阅读入口</div>
+<a class="nav-link " href="../article.html">长文导读</a>
+<a class="nav-link " href="README.html">课程 README</a>
+<div class="nav-section">分节指南</div>
+<a class="nav-link " href="00_overview.html">00 从做小项目到优化真实项目</a>
+<a class="nav-link " href="01_repo_selection_and_workflow.html">01 选择真实项目，并看懂双工具工作流</a>
+<a class="nav-link " href="02_git_basics.html">02 先学会本地 Git，再开始真实项目</a>
+<a class="nav-link " href="03_clone_and_baseline.html">03 远程 GitHub、克隆项目并记录基线</a>
+<a class="nav-link " href="04_openspec_proposal.html">04 创建 Change 1 OpenSpec</a>
+<a class="nav-link " href="05_superpowers_brainstorm.html">05 用 Superpowers 深化设计，但不替代 OpenSpec</a>
+<a class="nav-link " href="06_superpowers_write_plan.html">06 用 Superpowers 写可执行 TDD 计划</a>
+<a class="nav-link " href="07_tdd_subagent_execution.html">07 用 TDD + subagent 执行 Change 1</a>
+<a class="nav-link " href="08_slack_notification_bugfix.html">08 执行 Change 2</a>
+<a class="nav-link active" href="09_dashboard_change.html">09 准备并执行 Change 3</a>
+<a class="nav-link " href="10_qr_change.html">10 准备并执行 Change 4</a>
+<a class="nav-link " href="11_reflection_and_transfer.html">11 最终收口并复盘迁移这套工作流</a></nav>
+    </aside>
+    <main class="content">
+      <header class="page-header">
+        <h1>09. 准备并执行 Change 3：dashboard 可见优化</h1>
+        <div class="source-label">Source: guide/09_dashboard_change.md</div>
+        <nav class="page-links"><a href="08_slack_notification_bugfix.html">上一页：08 执行 Change 2</a>
+<a href="10_qr_change.html">下一页：10 准备并执行 Change 4</a></nav>
+      </header>
+      <article class="markdown-body">
+<h2 id="预计用时">预计用时</h2>
+<p>60-90 分钟。</p>
+<h2 id="本节位置">本节位置</h2>
+<p>前面应该已经完成 Change 1 <code>quality-baseline</code> 和 Change 2 <code>stabilize-slack-notification-config</code> 的执行；如果有阻塞，也必须已经清楚记录，并且不影响本节的启动、测试、页面观察和 artifact discovery。
+本节开始准备第一个明确的可见变化：Change 3 <code>optimize-dashboard-readability</code>。这里
+的 <code>openspec/changes/...</code> 和 <code>docs/superpowers/...</code> 都是你在前几节已经逐步生成出来的路径，不是 startup repo 自带目录。</p>
+<p>本节把 Change 3 一次走完：先准备，再实现，再验证。目标是把 dashboard 优化从一句“让页面更清楚”变成可执行的 OpenSpec change、Superpowers design doc、Superpowers plan，以及最终能被网页 before / after 证据证明的 <code>visible change</code>。</p>
+<p>注意：本章不是“边做边想 UI”的自由发挥，而是更严格的 visible change 练习。只有 OpenSpec artifacts 完整、Superpowers plan 真实路径已确认、网页 evidence 检查清单已锁定后，才进入实现。</p>
+<h2 id="工具使用规则">工具使用规则</h2>
+<ul>
+<li>终端用于检查 <code>git</code> 状态、查看 <code>openspec/</code> 和 <code>docs/superpowers/</code> 路径、运行测试、启动服务、记录 before / after。</li>
+<li><code>Claude Code CLI</code> 用于执行 <code>/opsx:propose</code>、补齐 OpenSpec artifacts、触发 Superpowers brainstorming、生成 writing plan，并按真实 plan 执行 Change 3。</li>
+<li>本节先做准备，再做实现；不要在还没补齐 artifacts 和真实 plan 路径前直接改代码。</li>
+</ul>
+<h2 id="学习目标">学习目标</h2>
+<ul>
+<li>为一个可见 UI / dashboard 优化创建独立 OpenSpec change。</li>
+<li>学会用规格限制 UI 改动范围，避免变成“大改版”。</li>
+<li>把可见变化拆成可验证的统计数据、状态显示和手动 before / after evidence。</li>
+<li>在实现前先锁定需要观察的页面、预期可见变化和对应验收标准。</li>
+<li>按真实 plan 完成 Change 3 的完整实现和验证。</li>
+<li>用网页 evidence 和自动化测试一起证明 Change 3 确实 worked。</li>
+</ul>
+<h2 id="本节产出物">本节产出物</h2>
+<ul>
+<li><code>learn_vibe_adv/overclocked-helpdesk-lab/openspec/changes/optimize-dashboard-readability/</code>：本节创建</li>
+<li>Change 3 的 OpenSpec <code>proposal.md</code>、<code>design.md</code>、<code>specs/.../spec.md</code>、<code>tasks.md</code></li>
+<li><code>docs/superpowers/specs/</code> 下的 Change 3 design doc，真实路径以 <code>find</code> 输出为准，本节创建</li>
+<li><code>docs/superpowers/plans/</code> 下的 Change 3 plan，真实路径以 <code>find</code> 输出为准，本节创建</li>
+<li>一份 Change 3 的网页 evidence 检查清单：至少明确 <code>/admin</code>、<code>/mentors-dashboard</code>、预期可见变化和验收标准映射</li>
+<li><code>notes/webpage-change-evidence-optimize-dashboard-readability.md</code></li>
+<li>Change 3 自动化测试输出和手动网页验证记录</li>
+<li><code>docs/verification/YYYY-MM-DD-optimize-dashboard-readability.md</code></li>
+</ul>
+<h2 id="操作步骤">操作步骤</h2>
+<h3 id="第-1-步-确认-change-1-和-change-2-状态">第 1 步：确认 Change 1 和 Change 2 状态</h3>
+<p>在终端执行：</p>
+<pre><code class="language-bash">cd learn_vibe_adv/overclocked-helpdesk-lab
+git status --short
+find openspec/changes -maxdepth 4 -type f | sort | sed -n '1,200p'
+find docs/superpowers -maxdepth 4 -type f | sort
+</code></pre>
+<p>进入 Change 3 前，你至少要能回答：</p>
+<ul>
+<li>Change 1 是否已经完成执行，或者阻塞是否被清楚记录？</li>
+<li>Change 2 是否已经完成执行，或者阻塞是否被清楚记录？</li>
+<li>当前工作区是否有你解释不清的代码改动？</li>
+<li>现在要准备的是 <code>optimize-dashboard-readability</code>，不是继续扩大前两个 change。</li>
+</ul>
+<p>本课程里的 <code>quality-baseline</code>、<code>stabilize-slack-notification-config</code> 和 <code>optimize-dashboard-readability</code> 是默认名称。如果你前面实际生成的 change 名称、OpenSpec 路径或 Superpowers 文件路径不同，以本地 <code>find ... | sort</code> 输出为准，并把真实路径贴进后续提示词，不要把课程示例路径当成固定事实。</p>
+<p>这一步也是进入 Change 3 的硬 gate。前两轮如果只是“阻塞已记录”，但阻塞会影响 <code>.venv</code>、应用启动、seed data、数据库状态、<code>/admin</code>、<code>/mentors-dashboard</code>、测试运行或 artifact discovery，就不要进入第 2 步。先解决阻塞，或把为什么不能继续 Change 3 记录清楚。</p>
+<h3 id="第-2-步-创建-change-3-openspec-proposal">第 2 步：创建 Change 3 OpenSpec proposal</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">/opsx:propose &quot;优化 OverClocked Helpdesk 的管理端和导师端仪表盘可读性。
+
+Change 名称建议：optimize-dashboard-readability。
+
+背景：
+前两轮已经建立质量基线，并修复 Slack 缺失配置的后台稳定性风险。现在要练习一个真正能在页面上看到变化的 change。
+
+目标：
+1. 管理端能看到 open query count、resolved query count、mentor workload；
+2. 导师端能更清楚地区分待处理、已分配、已解决的问题；
+3. 保持现有 Jinja2 模板和 CSS 方式；
+4. 不引入 React、图表库、WebSocket、完整 analytics；
+5. 不顺手修改 QR、Slack、认证或部署。
+
+验收：
+- 管理端页面能显示至少 3 个轻量统计；
+- 导师端列表能看出每个问题状态；
+- 有测试或手动验证清单证明统计来自真实查询数据；
+- before / after evidence 必须覆盖 `/admin` 和 `/mentors-dashboard`，并能说明这是 visible change。&quot;
+</code></pre>
+<h3 id="第-3-步-检查-openspec-artifacts">第 3 步：检查 OpenSpec artifacts</h3>
+<p>如果第 1 步发现 Change 3 的真实名称不是 <code>optimize-dashboard-readability</code>，下面命令和提示词里的 change 名称都要替换成你本地真实名称。</p>
+<p>在终端执行：</p>
+<pre><code class="language-bash">openspec status --change optimize-dashboard-readability --json
+openspec status --change optimize-dashboard-readability
+find openspec/changes/optimize-dashboard-readability -maxdepth 4 -type f | sort
+</code></pre>
+<p>确认这些文件存在，或按 OpenSpec status 提示补齐：</p>
+<ul>
+<li><code>openspec/changes/optimize-dashboard-readability/proposal.md</code></li>
+<li><code>openspec/changes/optimize-dashboard-readability/design.md</code></li>
+<li><code>openspec/changes/optimize-dashboard-readability/specs/.../spec.md</code></li>
+<li><code>openspec/changes/optimize-dashboard-readability/tasks.md</code></li>
+</ul>
+<p>如果缺失 artifact，按缺失类型处理，不要直接进入 Superpowers 或实现：</p>
+<table>
+<thead>
+<tr>
+  <th>缺失情况</th>
+  <th>恢复方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>openspec/changes/optimize-dashboard-readability/</code> 整个目录不存在</td>
+  <td>回到第 2 步，重新运行 <code>/opsx:propose</code>，并确认 change 名称。</td>
+</tr>
+<tr>
+  <td><code>proposal.md</code>、<code>design.md</code> 或 <code>specs/.../spec.md</code> 缺失</td>
+  <td>在 <code>Claude Code CLI</code> 中要求只修复当前 OpenSpec artifacts；先运行 <code>openspec status --change optimize-dashboard-readability --json</code>，按 OpenSpec 提示补缺失文件，不开始 Superpowers，不修改业务代码。</td>
+</tr>
+<tr>
+  <td><code>tasks.md</code> 缺失，或 status 显示 <code>tasks</code> 未完成</td>
+  <td>使用下面的 <code>tasks.md</code> 补齐提示词。</td>
+</tr>
+<tr>
+  <td>修复后 status 仍然 invalid</td>
+  <td>停下，把完整 <code>openspec status</code> 输出贴给 Claude Code 诊断；不要生成 plan，不要开始实现。</td>
+</tr>
+</tbody>
+</table>
+<p>如果只缺 <code>tasks.md</code>，在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请只补齐 optimize-dashboard-readability 的 OpenSpec tasks.md。
+
+输入：
+- OpenSpec change: openspec/changes/optimize-dashboard-readability/
+
+要求：
+1. 先读取 proposal.md、design.md 和 specs/ 下所有 spec.md；
+2. 只创建或修改 openspec/changes/optimize-dashboard-readability/tasks.md；
+3. tasks 必须覆盖 admin 轻量统计、mentor 状态可见性、自动化测试、网页 evidence 和验证命令；
+4. 不生成 Superpowers design doc；
+5. 不生成 implementation plan；
+6. 不修改 overclocked_helpdesk/、templates/、tests/ 或 docs/superpowers/。
+</code></pre>
+<h3 id="第-4-步-用-superpowers-深化-dashboard-设计">第 4 步：用 Superpowers 深化 dashboard 设计</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请基于 optimize-dashboard-readability 的 OpenSpec artifacts 使用 Superpowers brainstorming。
+
+要求：
+1. OpenSpec 是需求事实源；
+2. 只深化 dashboard 信息层级、统计字段、数据来源、模板插入位置和测试策略；
+3. 输出 design doc 到 docs/superpowers/specs/，并在完成后告诉我实际文件路径；
+4. 如发现验收场景缺失，只回写 OpenSpec spec；
+5. 不做视觉大改版，不引入前端框架，不改业务代码。
+</code></pre>
+<p>回到终端执行：</p>
+<pre><code class="language-bash">find docs/superpowers/specs -type f | sort
+</code></pre>
+<p>记录 dashboard design doc 的真实路径。</p>
+<h3 id="第-5-步-生成-change-3-实施计划">第 5 步：生成 Change 3 实施计划</h3>
+<p>先在终端记录当前 <code>base-ref</code>：</p>
+<pre><code class="language-bash">git rev-parse HEAD
+</code></pre>
+<p>然后在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请使用 Superpowers writing-plans，为 optimize-dashboard-readability 创建实施计划。
+
+输入：
+- OpenSpec change: openspec/changes/optimize-dashboard-readability/
+- Design Doc: &lt;paste the actual dashboard design doc path from Step 4&gt;
+- base-ref: &lt;paste the real git rev-parse HEAD output&gt;
+
+要求：
+1. plan 放到 docs/superpowers/plans/，并在完成后告诉我实际文件路径；
+2. 先为统计数据来源和 HTML 输出写失败测试；
+3. 再修改路由传入模板上下文；
+4. 最后小范围修改 Jinja 模板；
+5. 每一步都有验证命令或手动检查；凡是 python -m pytest 或 uvicorn，都默认先激活 .venv；
+6. 不引入图表库，不引入前端框架；
+7. 不修改 QR、Slack、认证或部署。
+</code></pre>
+<p>回到终端执行：</p>
+<pre><code class="language-bash">find docs/superpowers/plans -type f | sort
+</code></pre>
+<p>记录 dashboard plan 的真实路径。后面的执行阶段必须复用这条真实路径，不要猜文件名。</p>
+<h3 id="第-6-步-先锁定网页-evidence-检查清单">第 6 步：先锁定网页 evidence 检查清单</h3>
+<p>因为 Change 3 是 <code>visible change</code>，所以在进入实现前，你要先把“看什么页面、期待看到什么变化、每个变化对应哪个验收标准”写清楚。这样后面的执行阶段不是凭感觉说“页面好像变了”，而是按清单验证它真的 worked。</p>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请根据 optimize-dashboard-readability 的 OpenSpec artifacts、design doc 和 plan，整理一份“optimize-dashboard-readability 网页 evidence 检查清单”。
+
+要求：
+1. 不修改业务代码；
+2. 只输出检查清单，不开始实现；
+3. 至少列出 `/admin` 和 `/mentors-dashboard` 两个页面；
+4. 每个页面写清 Before 应看什么、After 应看什么；
+5. 每个可见变化都要对应 OpenSpec 验收标准；
+6. 明确哪些结果靠自动化测试证明，哪些结果必须靠网页观察证明。
+</code></pre>
+<p>把这份清单落到最终 evidence 文件里，不再创建单独的 prep 草稿文件，避免后面记录分叉。先在终端复制模板：</p>
+<pre><code class="language-bash">cd learn_vibe_adv
+cp notes/webpage-change-evidence.md notes/webpage-change-evidence-optimize-dashboard-readability.md
+</code></pre>
+<p>然后在同一份文件里填写 Change 信息，并在“截图或备注”下先增加一段“预实现检查清单”，写入刚才整理出来的页面、预期变化和验收标准映射。如果分类栏暂时需要占位，可以先标成：</p>
+<pre><code class="language-text">artifact-only preparation
+</code></pre>
+<p>这一步不是提前记录 Before / After，而是先把后面必须观察的 visible signals 固定下来。等 Change 3 执行完成后，必须在这同一份文件里补 Before / After，并把最终分类更新为 <code>visible change</code>。</p>
+<h3 id="第-7-步-确认真实-plan-路径并记录-dashboard-before">第 7 步：确认真实 plan 路径并记录 dashboard Before</h3>
+<p>在终端执行：</p>
+<pre><code class="language-bash">cd learn_vibe_adv/overclocked-helpdesk-lab
+git status --short
+find docs/superpowers/plans -type f | sort
+find docs/superpowers/specs -type f | sort
+</code></pre>
+<p>找到并记录 <code>optimize-dashboard-readability</code> 的真实 design doc 路径和 plan 路径。</p>
+<p>然后在终端执行：</p>
+<pre><code class="language-bash">cd learn_vibe_adv
+test -f notes/webpage-change-evidence-optimize-dashboard-readability.md
+cd overclocked-helpdesk-lab
+source .venv/bin/activate
+python scripts/seed_data.py
+uvicorn overclocked_helpdesk.main:app --reload
+</code></pre>
+<p>在浏览器记录 Before 状态，并截图保存：</p>
+<ul>
+<li><code>http://127.0.0.1:8000/admin</code></li>
+<li><code>http://127.0.0.1:8000/mentors-dashboard</code></li>
+</ul>
+<p>把 <code>本轮预期变化</code> 写成：</p>
+<pre><code class="language-text">optimize-dashboard-readability 是 visible change。管理端应出现轻量统计，导师端应更清楚地区分 query 状态；这些变化必须对应 optimize-dashboard-readability 的 OpenSpec 验收标准。
+</code></pre>
+<h3 id="第-8-步-按-plan-执行-change-3">第 8 步：按 plan 执行 Change 3</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请阅读 optimize-dashboard-readability 的 OpenSpec artifacts 和我刚记录的 Superpowers plan 真实路径。
+
+输入：
+- OpenSpec change: openspec/changes/optimize-dashboard-readability/
+- Superpowers plan: &lt;paste the actual dashboard plan path&gt;
+
+先不要实现。请先回答：
+1. 本 change 的 visible outcome 是什么；
+2. 哪些文件预计会被修改；
+3. 哪些任务必须先写失败测试；
+4. 哪些任务适合独立子代理，哪些必须串行；
+5. 哪些范围明确不做。
+</code></pre>
+<p>然后继续在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请按真实 plan 执行 optimize-dashboard-readability，直到整个 change 完成或出现明确阻塞。
+
+要求：
+1. 只执行 optimize-dashboard-readability；
+2. 每个实现任务都先写失败测试；
+3. 先改测试，再改路由上下文，最后改 Jinja 模板；
+4. 每个任务完成后都做三层 Review checkpoint：
+   - scope/spec review：是否符合 optimize-dashboard-readability 的 OpenSpec 验收标准和真实 plan；
+   - diff/code review：`git diff` 是否只改 dashboard 相关测试、路由上下文和模板，统计是否来自真实查询数据；
+   - completion review：测试、网页 evidence 和验证报告还缺什么；
+5. review 不通过就修复并重新验证；
+6. 每一步都贴出运行命令、结果和 review 结论；
+7. 不执行计划外功能。
+</code></pre>
+<p>如果 Claude 建议使用 subagent，只能把互不踩文件的任务交给子代理。共享 dashboard 路由、模板或测试的任务必须串行。</p>
+<h3 id="第-9-步-终端独立验证">第 9 步：终端独立验证</h3>
+<p>回到终端执行：</p>
+<pre><code class="language-bash">cd learn_vibe_adv/overclocked-helpdesk-lab
+source .venv/bin/activate
+python -m pytest tests/ -q
+git status --short
+</code></pre>
+<p>如果失败，不要直接进入 After evidence。先回到失败输出和 plan，判断是环境问题、测试问题、当前 change 实现不符合 spec，还是破坏旧行为。</p>
+<h3 id="第-10-步-记录-dashboard-after">第 10 步：记录 dashboard After</h3>
+<p>如果服务已经停止，重新启动：</p>
+<pre><code class="language-bash">source .venv/bin/activate
+uvicorn overclocked_helpdesk.main:app --reload
+</code></pre>
+<p>重新打开，对比 change 执行前的截图：</p>
+<ul>
+<li><code>http://127.0.0.1:8000/admin</code></li>
+<li><code>http://127.0.0.1:8000/mentors-dashboard</code></li>
+</ul>
+<p>更新：</p>
+<pre><code class="language-text">../notes/webpage-change-evidence-optimize-dashboard-readability.md
+</code></pre>
+<p>After 观察至少写清：</p>
+<ul>
+<li>管理端出现了哪些统计；</li>
+<li>导师端状态显示如何变清楚；</li>
+<li>每个观察对应哪个 OpenSpec 验收标准；</li>
+<li>分类写 <code>visible change</code>，如果第 6 步留下了 <code>artifact-only preparation</code> 占位，要在这里替换掉。</li>
+</ul>
+<h3 id="第-11-步-写-change-3-验证报告">第 11 步：写 Change 3 验证报告</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请创建或更新 docs/verification/YYYY-MM-DD-optimize-dashboard-readability.md。
+
+要求：
+1. 记录 dashboard 自动化测试命令和结果；
+2. 记录 Review checkpoint 结论：scope/spec review、diff/code review、completion review 是否通过；
+3. 记录 `/admin` 和 `/mentors-dashboard` 的 visible Before / After 验证结果；
+4. 标注每条 OpenSpec 验收标准是否通过；
+5. 引用 ../notes/webpage-change-evidence-optimize-dashboard-readability.md；
+6. 如果失败或阻塞，写清原因、影响范围和下一步；
+7. 不修改业务代码，不开始 configure-qr-base-url。
+</code></pre>
+<h3 id="第-12-步-总结-change-3-执行结果">第 12 步：总结 Change 3 执行结果</h3>
+<p>在 <code>Claude Code CLI</code> 中输入：</p>
+<pre><code class="language-text">请总结 optimize-dashboard-readability 的执行结果。
+
+要求：
+1. 列出完成的 plan 任务；
+2. 列出实际修改的文件；
+3. 列出测试命令和结果；
+4. 引用网页 evidence 文件；
+5. 说明为什么这是 visible change；
+6. 不开始 configure-qr-base-url 或任何后续 scope。
+</code></pre>
+<h2 id="验收标准">验收标准</h2>
+<p>通过标准：</p>
+<ul>
+<li>Change 3 OpenSpec change 已创建。</li>
+<li><code>proposal.md</code>、<code>design.md</code>、<code>specs/.../spec.md</code>、<code>tasks.md</code> 已在本节创建完成，或缺失项已按 OpenSpec 指令补齐。</li>
+<li>Superpowers design doc 和 plan 已在本节生成，并通过 <code>find ... | sort</code> 记录真实路径。</li>
+<li><code>/admin</code> 和 <code>/mentors-dashboard</code> 已被明确列为后面执行阶段必须记录的网页 evidence 页面。</li>
+<li>同一份 <code>notes/webpage-change-evidence-optimize-dashboard-readability.md</code> 先记录预实现检查清单，后补 Before / After，没有维护单独的 prep 草稿文件。</li>
+<li>你已经写清至少两类可见变化，以及它们对应的 OpenSpec 验收标准。</li>
+<li>你已经按真实 plan 完成 Change 3 的实现，或把阻塞点清楚记录。</li>
+<li><code>notes/webpage-change-evidence-optimize-dashboard-readability.md</code> 有 Before 和 After。</li>
+<li><code>docs/verification/YYYY-MM-DD-optimize-dashboard-readability.md</code> 已记录测试结果、visible evidence、OpenSpec 验收标准和阻塞状态。</li>
+<li>Evidence 分类为 <code>visible change</code>。</li>
+<li>页面变化能关联到 OpenSpec 验收标准。</li>
+</ul>
+<p>需要停下处理：</p>
+<ul>
+<li>如果 Claude 直接开始改模板，停止，回到本节 artifact checkpoint。</li>
+<li>如果 proposal 扩成完整 analytics、权限系统或前端框架，回到 OpenSpec 收缩范围。</li>
+<li>如果你还说不清要看哪两个页面、期待看到什么 visible signal，不要进入实现阶段。</li>
+<li>如果还没记录真实 plan 路径，不要进入实现阶段。</li>
+<li>如果还没记录 Before，就不要开始实现。</li>
+<li>如果页面变化无法对应 OpenSpec 验收标准，先补 evidence 或回到 spec。</li>
+</ul>
+<h2 id="常见卡点">常见卡点</h2>
+<ul>
+<li>以为准备了 UI change，页面就应该已经变化。</li>
+<li>没有先写清网页 evidence 清单，就急着开始实现。</li>
+<li>把 Change 3 evidence 拆成 prep 文件和最终文件，导致验收记录分叉。</li>
+<li>把统计数字写成模板里的固定文案，而不是来自真实查询数据。</li>
+<li>还没有 plan 就让 Claude 直接“优化 dashboard”。</li>
+<li>只跑测试，不看页面。</li>
+<li>页面变化看到了，但没有写对应哪个验收标准。</li>
+<li>把 dashboard polish 扩大成完整 UI redesign。</li>
+</ul>
+
+      </article>
+      <footer class="footer">Created by Walter and Codex at 2026-06-11 23:37.</footer>
+    </main>
+  </div>
+  <script src="../assets/reader.js"></script>
+</body>
+</html>
